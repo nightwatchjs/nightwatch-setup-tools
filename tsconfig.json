@@ -8,7 +8,7 @@
     "allowSyntheticDefaultImports": true,
     "target": "es6",
     "moduleResolution": "node",
-    "sourceMap": false,
+    "sourceMap": true,
     "outDir": "lib",
     "resolveJsonModule": true,
     "noUnusedLocals": true,
@@ -16,11 +16,8 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "strictNullChecks": true,
-    "skipLibCheck": true
-    // "typeRoots": [
-    //   "./custom-typings",
-    //   "./node_modules/@types"
-    // ]
+    "skipLibCheck": true,
+    "declaration": true
   },
   "include": [
     "src/**/*"

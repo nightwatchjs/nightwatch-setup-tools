@@ -23,6 +23,15 @@ Nightwatch Configuration Wizard
 Setting up Nightwatch in %s...
 `;
 
+export const EXAMPLE_TEST_FOLDER = 'examples';
+export const DEFAULT_FOLDER = 'nightwatch';
+
+export enum Runner {
+  Cucumber = 'cucumber',
+  Mocha = 'mocha',
+  Js = 'js',
+}
+
 export const AVAILABLE_CONFIG_FLAGS = ['yes', 'generate-config', 'browser', 'y', 'b', 'mobile', 'app', 'native'];
 
 const TESTING_TYPE_CHOICES = [
@@ -93,20 +102,33 @@ export const MOBILE_BROWSER_QUES: inquirer.QuestionCollection =
   default: ['chrome'],
   validate: (value) => {
     return !!value.length || 'Please select at least 1 browser.';
-  },
-  when: (answers: ConfigGeneratorAnswers) => {
-    if (!answers.mobile || answers.backend === 'remote') {
-      return false;
+  }
+};
+
+export const MOBILE_PLATFORM_QUES: inquirer.QuestionCollection = {
+  type: 'list',
+  name: 'mobilePlatform',
+  message: 'Select target mobile platform(s)',
+  choices: () => {
+    let platforms = MOBILE_PLATFORM_CHOICES;
+
+    if (process.platform !== 'darwin') {
+      platforms = platforms.filter((platform) => platform.value === 'android');
     }
 
-    const mobileBrowserValues = MOBILE_BROWSER_CHOICES
-      .map((browserObj) => browserObj.value);
-
-    const browsersHasMobileBrowsers = answers.browsers
-      ?.some(((browser: string) => mobileBrowserValues.includes(browser)));
-
-    return !browsersHasMobileBrowsers;
+    return platforms;
   }
+};
+
+export const UI_FRAMEWORK_QUESTIONS = {
+  type: 'list',
+  name: 'uiFramework',
+  message: 'Select UI framework',
+  choices: [
+    {name: 'React', value: 'react'},
+    {name: 'Vue.js', value: 'vue'},
+    {name: 'Storybook', value: 'storybook'}
+  ]
 };
 
 export const QUESTIONAIRRE: inquirer.QuestionCollection = [
@@ -181,14 +203,7 @@ export const QUESTIONAIRRE: inquirer.QuestionCollection = [
 
   // UI Framework
   {
-    type: 'list',
-    name: 'uiFramework',
-    message: 'Select UI framework',
-    choices: [
-      {name: 'React', value: 'react'},
-      {name: 'Vue.js', value: 'vue'},
-      {name: 'Storybook', value: 'storybook'}
-    ],
+    ...UI_FRAMEWORK_QUESTIONS,
     when: (answers: ConfigGeneratorAnswers) => answers.testingType?.includes('component')
   },
 
@@ -219,22 +234,26 @@ export const QUESTIONAIRRE: inquirer.QuestionCollection = [
     }
   },
 
-  MOBILE_BROWSER_QUES,
+  {
+    ...MOBILE_BROWSER_QUES,
+    when: (answers: ConfigGeneratorAnswers) => {
+      if (!answers.mobile || answers.backend === 'remote') {
+        return false;
+      }
+  
+      const mobileBrowserValues = MOBILE_BROWSER_CHOICES
+        .map((browserObj) => browserObj.value);
+  
+      const browsersHasMobileBrowsers = answers.browsers
+        ?.some(((browser: string) => mobileBrowserValues.includes(browser)));
+  
+      return !browsersHasMobileBrowsers;
+    }
+  },
 
   // PLATFORM
   {
-    type: 'list',
-    name: 'mobilePlatform',
-    message: 'Select target mobile platform(s)',
-    choices: () => {
-      let platforms = MOBILE_PLATFORM_CHOICES;
-  
-      if (process.platform !== 'darwin') {
-        platforms = platforms.filter((platform) => platform.value === 'android');
-      }
-  
-      return platforms;
-    },
+    ...MOBILE_BROWSER_QUES,
     when: (answers) => isAppTestingSetup(answers)
   },
 
@@ -343,7 +362,22 @@ export const QUESTIONAIRRE: inquirer.QuestionCollection = [
     }
   },
 
-  MOBILE_BROWSER_QUES
+  {
+    ...MOBILE_BROWSER_QUES,
+    when: (answers: ConfigGeneratorAnswers) => {
+      if (!answers.mobile || answers.backend === 'remote') {
+        return false;
+      }
+
+      const mobileBrowserValues = MOBILE_BROWSER_CHOICES
+        .map((browserObj) => browserObj.value);
+
+      const browsersHasMobileBrowsers = answers.browsers
+        ?.some(((browser: string) => mobileBrowserValues.includes(browser)));
+
+      return !browsersHasMobileBrowsers;
+    }
+  }
 ];
 
 export const CONFIG_DEST_QUES: inquirer.QuestionCollection = [
