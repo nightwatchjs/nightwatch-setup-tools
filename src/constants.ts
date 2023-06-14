@@ -91,13 +91,13 @@ export const MOBILE_BROWSER_QUES: inquirer.QuestionCollection =
   name: 'mobileBrowsers',
   message: 'Select target mobile-browsers',
   choices: () => {
-    let devices = MOBILE_BROWSER_CHOICES;
+    let browsers = MOBILE_BROWSER_CHOICES;
 
     if (process.platform !== 'darwin') {
-      devices = devices.filter((device) => device.value !== 'safari');
+      browsers = browsers.filter((device) => device.value !== 'safari');
     }
 
-    return devices;
+    return browsers;
   },
   default: ['chrome'],
   validate: (value) => {

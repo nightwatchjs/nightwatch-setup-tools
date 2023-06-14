@@ -47,7 +47,7 @@ export async function copyAppTestingExamples(answers: ConfigGeneratorAnswers, ro
       mobilePlatforms.push(answers.mobilePlatform);
     }
   }
-  
+
   Logger.info('Generating mobile-app example tests...\n');
   
   const examplesDestPath = path.join(

@@ -5,7 +5,7 @@ import colors from 'ansi-colors';
 import Logger from './logger';
 import {installPackages, copyAppTestingExamples, postMobileSetupInstructions} from './common';
 import {AndroidSetup, IosSetup} from '@nightwatch/mobile-helper';
-import {UI_FRAMEWORK_QUESTIONS, MOBILE_BROWSER_QUES, MOBILE_PLATFORM_QUES, DEFAULT_FOLDER} from './constants';
+import {UI_FRAMEWORK_QUESTIONS, MOBILE_BROWSER_CHOICES, MOBILE_PLATFORM_QUES, DEFAULT_FOLDER, EXAMPLE_TEST_FOLDER} from './constants';
 import {ConfigGeneratorAnswers, MobileHelperResult} from './interfaces';
 
 export default class NightwatchConfigurator {
@@ -14,26 +14,40 @@ export default class NightwatchConfigurator {
   private rootDir: string;
   private advice: string[];
 
+  private static supportedFlags: string[] = ['add'];
+
   constructor(pkgJsonPath = './') {
     this.pkgJsonPath = pkgJsonPath;
     this.rootDir = path.resolve('./');
     this.advice = [];
   }
 
-  public async addComponents(argv: {[key: string]: string}) {
-    if (!argv.add) {
-      Logger.error('Invalid argument, expected `--add` to be present');
-
-      return;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  static hasSupportedFlags(argv: {[arg: string]: any}) {
+    for (const arg in argv) {
+      if (this.supportedFlags.includes(arg)) {
+        return true;
+      }
     }
+  }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public async run(argv: {[arg: string]: any}) {
+    if (argv.add) {
+      this.addComponents(argv.add);
+    } else {
+      Logger.error('Invalid argument, expected `--add` to be present');
+    }
+  }
+
+  public async addComponents(name: string) {
     try {
       const packageJson = await PackageJson.load(this.pkgJsonPath);
       this.nightwatchConfig = (<{[key: string]: string}> packageJson.content).nightwatch || {};
 
       this.nightwatchConfig.plugins = this.nightwatchConfig.plugins || [];
 
-      switch (argv.add) {
+      switch (name) {
         case 'component-testing':
           await this.addComponentTesting();
           break;
@@ -53,7 +67,9 @@ export default class NightwatchConfigurator {
           break;
 
         default:
-          this.printHelp();
+          this.printHelpForAdd();
+
+          return;
       }
 
       await this.updatePackageJson();
@@ -64,7 +80,7 @@ export default class NightwatchConfigurator {
   }
 
   private async updatePackageJson() {
-    const packageJson = await PackageJson.load();
+    const packageJson = await PackageJson.load(this.pkgJsonPath);
 
     packageJson.update({
       nightwatch: this.nightwatchConfig
@@ -170,6 +186,7 @@ export default class NightwatchConfigurator {
 
   private addMobileTestingConfig(answers: ConfigGeneratorAnswers) {
     this.nightwatchConfig.test_settings = this.nightwatchConfig.test_settings || {};
+    const dotExe = process.platform === 'win32' ? '.exe' : '';
 
     if (answers.mobileBrowsers?.includes('firefox')) {
       this.nightwatchConfig.test_settings['android.real.firefox'] = {
@@ -242,7 +259,7 @@ export default class NightwatchConfigurator {
           start_process: true,
           // path to chromedriver executable which can work with the factory
           // version of Chrome mobile browser on the emulator (version 83).
-          server_path: 'chromedriver-mobile/chromedriver<%- dotExe %>',
+          server_path: `chromedriver-mobile/chromedriver${dotExe}`,
           cli_args: [
             // --verbose
           ]
@@ -314,12 +331,11 @@ export default class NightwatchConfigurator {
             // Android Virtual Device to run tests on
             avd: 'nightwatch-android-11',
             //TODO: fix this
-            app: `${__dirname}/nightwatch/sample-apps/wikipedia.apk`,
+            app: `${this.rootDir}/nightwatch/sample-apps/wikipedia.apk`,
             appPackage: 'org.wikipedia',
             appActivity: 'org.wikipedia.main.MainActivity',
             appWaitActivity: 'org.wikipedia.onboarding.InitialOnboardingActivity',
-            // TODO: fix this
-            chromedriverExecutable: `${__dirname}/chromedriver-mobile/chromedriver<%- dotExe %>`,
+            chromedriverExecutable: `${this.rootDir}/chromedriver-mobile/chromedriver${dotExe}`,
             newCommandTimeout: 0
           }
         }
@@ -335,7 +351,7 @@ export default class NightwatchConfigurator {
             automationName: 'UiAutomator2',
 
             // TODO: fix this
-            app: `${__dirname}/nightwatch/sample-apps/wikipedia.apk`,
+            app: `${this.rootDir}/nightwatch/sample-apps/wikipedia.apk`,
             appPackage: 'org.wikipedia',
             appActivity: 'org.wikipedia.main.MainActivity',
             appWaitActivity: 'org.wikipedia.onboarding.InitialOnboardingActivity',
@@ -358,7 +374,7 @@ export default class NightwatchConfigurator {
             deviceName: 'iPhone 13',
 
             // TODO: fix this
-            app: `${__dirname}/nightwatch/sample-apps/wikipedia.zip`,
+            app: `${this.rootDir}/nightwatch/sample-apps/wikipedia.zip`,
             bundleId: 'org.wikimedia.wikipedia',
             newCommandTimeout: 0
           }
@@ -373,7 +389,7 @@ export default class NightwatchConfigurator {
           'appium:options': {
             automationName: 'XCUITest',
             //TODO: fix this
-            app: `${__dirname}/nightwatch/sample-apps/wikipedia.zip`,
+            app: `${this.rootDir}/nightwatch/sample-apps/wikipedia.zip`,
             bundleId: 'org.wikimedia.wikipedia',
             newCommandTimeout: 0
           }
@@ -390,12 +406,65 @@ export default class NightwatchConfigurator {
     const mobileHelperResult:MobileHelperResult = {};
     const answers = await prompt([
       MOBILE_PLATFORM_QUES,
-      MOBILE_BROWSER_QUES
+      {
+        type: 'checkbox',
+        name: 'mobileBrowsers',
+        message: 'Select target mobile-browsers',
+        choices: (answers: ConfigGeneratorAnswers) => {
+          let browsers = MOBILE_BROWSER_CHOICES;
+
+          if (process.platform !== 'darwin') {
+            browsers = browsers.filter((browser) => browser.value !== 'safari');
+          }
+
+          if (answers.mobilePlatform === 'ios') {
+            browsers = browsers.filter((browser) => browser.value === 'safari');
+          }
+
+          return browsers;
+        },
+        default: (answers: ConfigGeneratorAnswers) => {
+          if (answers.mobilePlatform === 'ios' || answers.mobilePlatform === 'both' && process.platform === 'darwin') {
+            return ['safari'];
+          } else {
+            return ['chrome'];
+          }
+        },
+        validate: (value) => {
+          return !!value.length || 'Please select at least 1 browser.';
+        }
+      }
     ]);
 
-    installPackages(['@nightwatch/mobile-helper', 'appium'], this.rootDir);
+    answers.examplesLocation = path.join(DEFAULT_FOLDER, EXAMPLE_TEST_FOLDER);
+    answers.mobile = true;
 
-    // import components form mobile-helper and execute them
+    if (answers.mobilePlatform === 'ios' && this.nightwatchConfig?.test_settings && this.nightwatchConfig?.test_settings['ios.real.safari']) {
+      Logger.info('Mobile Testing is already configured for iOS.');
+
+      return;
+    }
+
+    if (answers.mobilePlatform === 'android' && this.nightwatchConfig?.test_settings
+      && (this.nightwatchConfig?.test_settings['android.real.chrome'] 
+      || this.nightwatchConfig?.test_settings['android.real.firefox'])
+    ) {
+      Logger.info('Mobile Testing is already configured for Android.');
+
+      return;
+    }
+
+    if (answers.mobilePlatform === 'both' && this.nightwatchConfig?.test_settings
+      && (this.nightwatchConfig?.test_settings['android.real.chrome'] 
+      || this.nightwatchConfig?.test_settings['android.real.firefox']
+      || this.nightwatchConfig?.test_settings['ios.real.safari'])
+    ) {
+      Logger.info('Mobile Testing is already configured.');
+
+      return;
+    }
+
+    installPackages(['@nightwatch/mobile-helper', 'appium'], this.rootDir);
 
     if (['android', 'both'].includes(answers.mobilePlatform)) {
       Logger.info('Running Android Setup...\n');
@@ -416,10 +485,9 @@ export default class NightwatchConfigurator {
     postMobileSetupInstructions(answers, mobileHelperResult, '', this.rootDir, '', false);
   }
 
-  private printHelp() {
-    // TODO: load this from a common place
+  private printHelpForAdd() {
     const message = `
-    Invalid argument passed to ${colors.cyan('--install')}, available options are:
+    Invalid argument passed to ${colors.cyan('--add')}, available options are:
         ${colors.yellow('component-testing')}       :: Adds support for component testing using React, Vue, etc.
         ${colors.yellow('unit-testing')}            :: Adds support for unit testing / api testing.
         ${colors.yellow('vrt')}                     :: Adds support for Visual Regression testing.

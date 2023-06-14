@@ -8,3 +8,4 @@ nightwatch.conf.js
 nightwatch/
 chromedriver-mobile/
 logs/
+dist/
