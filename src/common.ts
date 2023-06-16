@@ -47,7 +47,7 @@ export async function copyAppTestingExamples(answers: ConfigGeneratorAnswers, ro
       mobilePlatforms.push(answers.mobilePlatform);
     }
   }
-
+  
   Logger.info('Generating mobile-app example tests...\n');
   
   const examplesDestPath = path.join(
@@ -314,7 +314,7 @@ export function postMobileSetupInstructions(answers: ConfigGeneratorAnswers,
   }
 
   if (isInitiation) {
-    // eslint-disable-next-line no-console
+    // TODO: separate flows if required
     console.log('Initializing nightwatch');
   }
 

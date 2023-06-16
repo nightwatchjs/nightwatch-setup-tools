@@ -35,7 +35,7 @@
     "eslint": "^8.27.0",
     "mocha": "^10.1.0",
     "mockery": "^2.1.0",
-    "nightwatch": "^2.5.4",
+    "nightwatch": "^2.6.21",
     "nock": "^13.2.9",
     "typescript": "^4.7.3"
   },
