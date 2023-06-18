@@ -4,10 +4,11 @@ import path from 'path';
 import colors from 'ansi-colors';
 import boxen from 'boxen';
 import Logger from './logger';
-import {ConfigGeneratorAnswers, MobileHelperResult} from './interfaces';
+import {ConfigGeneratorAnswers, MobileHelperResult, NightwatchConfig} from './interfaces';
 import {copy, downloadWithProgressBar} from './utils';
 import DOWNLOADS from './downloads.json';
-import {EXAMPLE_TEST_FOLDER, Runner, isAppTestingSetup, isLocalMobileTestingSetup, isRemoteMobileTestingSetup} from './constants';
+import {CONFIG_FILE_CJS, CONFIG_FILE_JS, CONFIG_FILE_JSON, CONFIG_FILE_TS, EXAMPLE_TEST_FOLDER, Runner, isAppTestingSetup, isLocalMobileTestingSetup, isRemoteMobileTestingSetup} from './constants';
+import NPMCliPackageJson from '@npmcli/package-json';
 
 export function installPackages(packagesToInstall: string[], rootDir: string): void {
   if (packagesToInstall.length === 0) {
@@ -351,4 +352,45 @@ export function postMobileSetupInstructions(answers: ConfigGeneratorAnswers,
       }
     }
   }
+}
+
+export function getLocalConfigFileName(packageJson: NPMCliPackageJson) {
+  const usingESM = packageJson.content.type === 'module';
+
+  const usingTS = fs.existsSync(CONFIG_FILE_TS);
+
+  if (usingESM) {
+    return path.resolve(CONFIG_FILE_CJS);
+  }
+  if (usingTS) {
+    return path.resolve(CONFIG_FILE_TS);
+  }
+
+  return path.resolve(CONFIG_FILE_JS);
+}
+
+export function loadNightwatchConfig(packageJson: NPMCliPackageJson, configArg?: string): NightwatchConfig | false {
+
+  const jsOrTsConfigPath = getLocalConfigFileName(packageJson);
+  const jsonConfigPath = path.resolve(CONFIG_FILE_JSON);
+  const hasJsOrTsConfig = fs.existsSync(jsOrTsConfigPath);
+  const hasJsonConfig = fs.existsSync(jsonConfigPath);
+
+  let hasProvidedConfig = false;
+  let providedConfigPath = '';
+
+  if (configArg) {
+    providedConfigPath = path.resolve(configArg);
+    hasProvidedConfig = fs.existsSync(providedConfigPath);
+  }
+
+  if (hasProvidedConfig) {
+    return require(providedConfigPath);
+  } else if (hasJsOrTsConfig) {
+    return require(jsOrTsConfigPath);
+  } else if (hasJsonConfig) {
+    return require(jsonConfigPath);
+  }
+
+  return false;
 }

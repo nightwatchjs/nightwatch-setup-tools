@@ -54,3 +54,8 @@ export interface MobileHelperResult {
   android?: Awaited<ReturnType<AndroidSetup['run']>>;
   ios?: Awaited<ReturnType<IosSetup['run']>>;
 }
+
+export interface NightwatchConfig {
+  plugins?: string[];
+  [key: string]: unknown;
+}

@@ -26,6 +26,11 @@ Setting up Nightwatch in %s...
 export const EXAMPLE_TEST_FOLDER = 'examples';
 export const DEFAULT_FOLDER = 'nightwatch';
 
+export const CONFIG_FILE_JS = './nightwatch.conf.js';
+export const CONFIG_FILE_CJS = './nightwatch.conf.cjs';
+export const CONFIG_FILE_TS = './nightwatch.conf.ts';
+export const CONFIG_FILE_JSON = './nightwatch.json';
+
 export enum Runner {
   Cucumber = 'cucumber',
   Mocha = 'mocha',

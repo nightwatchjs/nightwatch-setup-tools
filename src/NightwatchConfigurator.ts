@@ -3,27 +3,33 @@ import fs from 'node:fs';
 import PackageJson from '@npmcli/package-json';
 import colors from 'ansi-colors';
 import Logger from './logger';
-import {installPackages, copyAppTestingExamples, postMobileSetupInstructions} from './common';
+import minimist from 'minimist';
+import {installPackages, copyAppTestingExamples, postMobileSetupInstructions, loadNightwatchConfig} from './common';
 import {AndroidSetup, IosSetup} from '@nightwatch/mobile-helper';
 import {UI_FRAMEWORK_QUESTIONS, MOBILE_BROWSER_CHOICES, MOBILE_PLATFORM_QUES, DEFAULT_FOLDER, EXAMPLE_TEST_FOLDER} from './constants';
-import {ConfigGeneratorAnswers, MobileHelperResult} from './interfaces';
+import {ConfigGeneratorAnswers, MobileHelperResult, NightwatchConfig} from './interfaces';
+import NPMCliPackageJson from '@npmcli/package-json';
 
 export default class NightwatchConfigurator {
   private pkgJsonPath: string;
-  private nightwatchConfig: any;
+  private nightwatchPkgConfig: {[key: string]: any}; // TODO: ask Priyansh
+  private nightwatchConfigFile: NightwatchConfig | false;
+  private packageJson: NPMCliPackageJson | undefined;
   private rootDir: string;
-  private advice: string[];
+  private argv: minimist.ParsedArgs;
 
   private static supportedFlags: string[] = ['add'];
 
-  constructor(pkgJsonPath = './') {
+  constructor(argv: minimist.ParsedArgs, pkgJsonPath = './') {
     this.pkgJsonPath = pkgJsonPath;
     this.rootDir = path.resolve('./');
-    this.advice = [];
+    this.argv = argv;
+    this.nightwatchConfigFile = false;
+    this.nightwatchPkgConfig = {};
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  static hasSupportedFlags(argv: {[arg: string]: any}) {
+  static hasSupportedFlags(argv: minimist.ParsedArgs) {
     for (const arg in argv) {
       if (this.supportedFlags.includes(arg)) {
         return true;
@@ -32,20 +38,27 @@ export default class NightwatchConfigurator {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public async run(argv: {[arg: string]: any}) {
-    if (argv.add) {
-      this.addComponents(argv.add);
-    } else {
-      Logger.error('Invalid argument, expected `--add` to be present');
+  public async run() {
+    if (this.argv.add) {
+      this.addComponents(this.argv.add);
     }
+
+    // Other commands can be added later on
   }
 
-  public async addComponents(name: string) {
-    try {
-      const packageJson = await PackageJson.load(this.pkgJsonPath);
-      this.nightwatchConfig = (<{[key: string]: string}> packageJson.content).nightwatch || {};
+  private async loadConfig(): Promise<void> {
+    this.packageJson = await PackageJson.load(this.pkgJsonPath);
+    // TODO: ask priyansh
+    this.nightwatchPkgConfig = (<{[key: string]: any}> this.packageJson.content).nightwatch || {};
+    this.nightwatchPkgConfig.plugins = this.nightwatchPkgConfig.plugins || [];
+    this.nightwatchPkgConfig.test_settings = this.nightwatchPkgConfig.test_settings || {};
 
-      this.nightwatchConfig.plugins = this.nightwatchConfig.plugins || [];
+    this.nightwatchConfigFile = loadNightwatchConfig(this.packageJson, this.argv.config);
+  }
+
+  public async addComponents(name: string): Promise<void> {
+    try {
+      await this.loadConfig();
 
       switch (name) {
         case 'component-testing':
@@ -73,7 +86,6 @@ export default class NightwatchConfigurator {
       }
 
       await this.updatePackageJson();
-      this.printAdvice();
     } catch (err) {
       Logger.error(`Failed to add components: ${err}`);
     }
@@ -83,19 +95,27 @@ export default class NightwatchConfigurator {
     const packageJson = await PackageJson.load(this.pkgJsonPath);
 
     packageJson.update({
-      nightwatch: this.nightwatchConfig
-    } as {[key: string]: string});
+      nightwatch: this.nightwatchPkgConfig
+    } as {[key: string]: any}); // TODO: ask priyansh
 
     await packageJson.save();
   }
 
   private async addVrt() {
     Logger.info('Setting up Visual Regression Testing for Nightwatch...');
-    if (!this.nightwatchConfig.plugins.includes('@nightwatch/vrt')) {
-      this.nightwatchConfig.plugins.push('@nightwatch/vrt');
+    if (!this.isPluginConfigured(['@nightwatch/vrt'])) {
+      this.nightwatchPkgConfig.plugins.push('@nightwatch/vrt');
       installPackages(['@nightwatch/vrt'], this.rootDir);
 
-      // TODO: check if we need to add additional configurations
+      Logger.info(`
+    To use the vrt plugin, use the following assertion:
+      browser
+        .url('https://nightwatchjs.org')
+        .assert.screenshotIdenticalToBaseline('body',  /* Optional */ 'custom-name', {threshold: 0.0}, 'VRT custom-name complete.')
+        .end()
+
+    For More information visit: https://github.com/nightwatchjs/nightwatch-vrt
+      `);
     } else {
       Logger.info('Visual Regression Testing is already configured.');
     }
@@ -119,16 +139,16 @@ export default class NightwatchConfigurator {
     }
 
     if (answers.uiFramework === 'react' || answers.uiFramework === 'vue') {
-      this.nightwatchConfig.vite_dev_server = {
+      this.nightwatchPkgConfig.vite_dev_server = {
         start_vite: true,
         port: 5173
       };
 
-      this.nightwatchConfig.baseUrl = 'http://localhost:5173';
+      this.nightwatchPkgConfig.baseUrl = 'http://localhost:5173';
     }
 
     if (answers.uiFramework === 'storybook') {
-      this.nightwatchConfig['@nightwatch/storybook'] = {
+      this.nightwatchPkgConfig['@nightwatch/storybook'] = {
         start_storybook: true,
         storybook_config_dir: '.storybook',
         hide_csf_errors: true,
@@ -136,8 +156,20 @@ export default class NightwatchConfigurator {
         storybook_url: 'http://localhost:6006'
       };
 
-      this.nightwatchConfig.baseUrl = 'http://localhost:6006';
+      this.nightwatchPkgConfig.baseUrl = 'http://localhost:6006';
     }
+  }
+
+  private isPluginConfigured(plugins: string[]): boolean {
+    for (const plugin in plugins) {
+      if (this.nightwatchPkgConfig.plugins.includes(plugin) ||
+         (this.nightwatchConfigFile && this.nightwatchConfigFile.plugins?.includes(plugin))
+      ) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private async addComponentTesting() {
@@ -148,8 +180,8 @@ export default class NightwatchConfigurator {
     const answers = await prompt([UI_FRAMEWORK_QUESTIONS]);
 
     const pluginInstall = `@nightwatch/${answers.uiFramework}`;
-    if (!this.nightwatchConfig.plugins.includes(pluginInstall)) { // TODO: we need to check if plugin is present in nightwatch.conf.js as well
-      this.nightwatchConfig.plugins.push(pluginInstall);
+    if (!this.isPluginConfigured([pluginInstall])) {
+      this.nightwatchPkgConfig.plugins.push(pluginInstall);
       installPackages([pluginInstall], this.rootDir);
       this.addComponentTestingConfig(answers);
     } else {
@@ -159,19 +191,24 @@ export default class NightwatchConfigurator {
 
   private async addAPITesting() {
     Logger.info('Setting up Unit Testing for Nightwatch...');
-    if (!this.nightwatchConfig.plugins.includes('@nightwatch/apitesting')) {
+    if (!this.isPluginConfigured(['@nightwatch/apitesting'])) {
       const packages = ['@nightwatch/apitesting'];
-      this.nightwatchConfig.plugins.push('@nightwatch/apitesting');
+      this.nightwatchPkgConfig.plugins.push('@nightwatch/apitesting');
 
-      if (!this.nightwatchConfig.plugins.includes('@nightwatch/testdoubles')) {
+      if (!this.isPluginConfigured(['@nightwatch/testdoubles'])) {
         packages.push('@nightwatch/testdoubles');
-        this.nightwatchConfig.plugins.push('@nightwatch/testdoubles');
+        this.nightwatchPkgConfig.plugins.push('@nightwatch/testdoubles');
       }
 
       installPackages(packages, this.rootDir);
 
-      // TODO: check if we need to add config
-      this.advice.push(`Make sure browser session is turned off during API testing: 
+      this.nightwatchPkgConfig.test_settings.default = this.nightwatchPkgConfig.test_settings.default || {};
+      this.nightwatchPkgConfig.test_settings.default.webdriver = this.nightwatchPkgConfig.test_settings.default.webdriver || {};
+      this.nightwatchPkgConfig.test_settings.default.start_session = false;
+      this.nightwatchPkgConfig.test_settings.default.webdriver.start_process = false;
+
+      // Inform the user in case nightwatch.conf.js
+      Logger.info(`Make sure browser session is turned off during API testing (in nightwatch.conf.js): 
       {
         "start_session": false,
         "webdriver": {
@@ -185,11 +222,10 @@ export default class NightwatchConfigurator {
   }
 
   private addMobileTestingConfig(answers: ConfigGeneratorAnswers) {
-    this.nightwatchConfig.test_settings = this.nightwatchConfig.test_settings || {};
     const dotExe = process.platform === 'win32' ? '.exe' : '';
 
     if (answers.mobileBrowsers?.includes('firefox')) {
-      this.nightwatchConfig.test_settings['android.real.firefox'] = {
+      this.nightwatchPkgConfig.test_settings['android.real.firefox'] = {
         desiredCapabilities: {
           real_mobile: true,
           browserName: 'firefox',
@@ -205,7 +241,7 @@ export default class NightwatchConfigurator {
         }
       };
 
-      this.nightwatchConfig.test_settings['android.emulator.firefox'] = {
+      this.nightwatchPkgConfig.test_settings['android.emulator.firefox'] = {
         desiredCapabilities: {
           real_mobile: false,
           avd: 'nightwatch-android-11',
@@ -225,7 +261,7 @@ export default class NightwatchConfigurator {
     }
 
     if (answers.mobileBrowsers?.includes('chrome')) {
-      this.nightwatchConfig.test_settings['android.real.chrome'] = {
+      this.nightwatchPkgConfig.test_settings['android.real.chrome'] = {
         desiredCapabilities: {
           real_mobile: true,
           browserName: 'chrome',
@@ -243,7 +279,7 @@ export default class NightwatchConfigurator {
         }
       };
 
-      this.nightwatchConfig.test_settings['android.emulator.chrome'] = {
+      this.nightwatchPkgConfig.test_settings['android.emulator.chrome'] = {
         desiredCapabilities: {
           real_mobile: false,
           avd: 'nightwatch-android-11',
@@ -268,7 +304,7 @@ export default class NightwatchConfigurator {
     }
 
     if (answers.mobileBrowsers?.includes('safari')) {
-      this.nightwatchConfig.test_settings['ios.real.safari'] = {
+      this.nightwatchPkgConfig.test_settings['ios.real.safari'] = {
         desiredCapabilities: {
           browserName: 'safari',
           platformName: 'iOS'
@@ -281,7 +317,7 @@ export default class NightwatchConfigurator {
         }
       };
 
-      this.nightwatchConfig.test_settings['ios.simulator.safari'] = {
+      this.nightwatchPkgConfig.test_settings['ios.simulator.safari'] = {
         desiredCapabilities: {
           browserName: 'safari',
           platformName: 'iOS',
@@ -298,7 +334,7 @@ export default class NightwatchConfigurator {
     }
 
     if (answers.testingType?.includes('app')) {
-      this.nightwatchConfig.test_settings['app'] = {
+      this.nightwatchPkgConfig.test_settings['app'] = {
         selenium: {
           start_process: true,
           use_appium: true,
@@ -321,7 +357,7 @@ export default class NightwatchConfigurator {
     }
 
     if (answers.mobilePlatform && ['android', 'both'].includes(answers.mobilePlatform)) {
-      this.nightwatchConfig.test_settings['app.android.emulator'] = {
+      this.nightwatchPkgConfig.test_settings['app.android.emulator'] = {
         extends: 'app',
         'desiredCapabilities': {
           browserName: null,
@@ -341,7 +377,7 @@ export default class NightwatchConfigurator {
         }
       },
 
-      this.nightwatchConfig.test_settings['app.android.real'] = {
+      this.nightwatchPkgConfig.test_settings['app.android.real'] = {
         extends: 'app',
         'desiredCapabilities': {
           // More capabilities can be found at https://github.com/appium/appium-uiautomator2-driver#capabilities
@@ -363,7 +399,7 @@ export default class NightwatchConfigurator {
     }
 
     if (answers.mobilePlatform && ['ios', 'both'].includes(answers.mobilePlatform)) {
-      this.nightwatchConfig.test_settings['app.ios.simulator'] = {
+      this.nightwatchPkgConfig.test_settings['app.ios.simulator'] = {
         extends: 'app',
         'desiredCapabilities': {
           // More capabilities can be found at https://github.com/appium/appium-xcuitest-driver#capabilities
@@ -381,7 +417,7 @@ export default class NightwatchConfigurator {
         }
       };
 
-      this.nightwatchConfig.test_settings['app.ios.real'] = {
+      this.nightwatchPkgConfig.test_settings['app.ios.real'] = {
         extends: 'app',
         'desiredCapabilities': {
           browserName: null,
@@ -439,25 +475,25 @@ export default class NightwatchConfigurator {
     answers.examplesLocation = path.join(DEFAULT_FOLDER, EXAMPLE_TEST_FOLDER);
     answers.mobile = true;
 
-    if (answers.mobilePlatform === 'ios' && this.nightwatchConfig?.test_settings && this.nightwatchConfig?.test_settings['ios.real.safari']) {
+    if (answers.mobilePlatform === 'ios' && this.nightwatchPkgConfig?.test_settings && this.nightwatchPkgConfig?.test_settings['ios.real.safari']) {
       Logger.info('Mobile Testing is already configured for iOS.');
 
       return;
     }
 
-    if (answers.mobilePlatform === 'android' && this.nightwatchConfig?.test_settings
-      && (this.nightwatchConfig?.test_settings['android.real.chrome'] 
-      || this.nightwatchConfig?.test_settings['android.real.firefox'])
+    if (answers.mobilePlatform === 'android' && this.nightwatchPkgConfig?.test_settings
+      && (this.nightwatchPkgConfig?.test_settings['android.real.chrome'] 
+      || this.nightwatchPkgConfig?.test_settings['android.real.firefox'])
     ) {
       Logger.info('Mobile Testing is already configured for Android.');
 
       return;
     }
 
-    if (answers.mobilePlatform === 'both' && this.nightwatchConfig?.test_settings
-      && (this.nightwatchConfig?.test_settings['android.real.chrome'] 
-      || this.nightwatchConfig?.test_settings['android.real.firefox']
-      || this.nightwatchConfig?.test_settings['ios.real.safari'])
+    if (answers.mobilePlatform === 'both' && this.nightwatchPkgConfig?.test_settings
+      && (this.nightwatchPkgConfig?.test_settings['android.real.chrome'] 
+      || this.nightwatchPkgConfig?.test_settings['android.real.firefox']
+      || this.nightwatchPkgConfig?.test_settings['ios.real.safari'])
     ) {
       Logger.info('Mobile Testing is already configured.');
 
@@ -496,9 +532,5 @@ export default class NightwatchConfigurator {
 
     // eslint-disable-next-line no-console
     console.log(message);
-  }
-
-  private printAdvice() {
-    Logger.info(this.advice.join('\n'));
   }
 }
