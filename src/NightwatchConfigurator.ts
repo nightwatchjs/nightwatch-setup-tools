@@ -11,7 +11,6 @@ import {ConfigGeneratorAnswers, MobileHelperResult, NightwatchConfig} from './in
 import NPMCliPackageJson from '@npmcli/package-json';
 
 export default class NightwatchConfigurator {
-  private pkgJsonPath: string;
   private nightwatchPkgConfig: {[key: string]: any}; // TODO: ask Priyansh
   private nightwatchConfigFile: NightwatchConfig | false;
   private packageJson: NPMCliPackageJson | undefined;
@@ -20,9 +19,8 @@ export default class NightwatchConfigurator {
 
   private static supportedFlags: string[] = ['add'];
 
-  constructor(argv: minimist.ParsedArgs, pkgJsonPath = './') {
-    this.pkgJsonPath = pkgJsonPath;
-    this.rootDir = path.resolve('./');
+  constructor(argv: minimist.ParsedArgs, rootDir = './') {
+    this.rootDir = rootDir;
     this.argv = argv;
     this.nightwatchConfigFile = false;
     this.nightwatchPkgConfig = {};
@@ -40,14 +38,14 @@ export default class NightwatchConfigurator {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public async run() {
     if (this.argv.add) {
-      this.addComponents(this.argv.add);
+      await this.addComponents(this.argv.add);
     }
 
     // Other commands can be added later on
   }
 
   private async loadConfig(): Promise<void> {
-    this.packageJson = await PackageJson.load(this.pkgJsonPath);
+    this.packageJson = await PackageJson.load(this.rootDir);
     // TODO: ask priyansh
     this.nightwatchPkgConfig = (<{[key: string]: any}> this.packageJson.content).nightwatch || {};
     this.nightwatchPkgConfig.plugins = this.nightwatchPkgConfig.plugins || [];
@@ -92,7 +90,7 @@ export default class NightwatchConfigurator {
   }
 
   private async updatePackageJson() {
-    const packageJson = await PackageJson.load(this.pkgJsonPath);
+    const packageJson = await PackageJson.load(this.rootDir);
 
     packageJson.update({
       nightwatch: this.nightwatchPkgConfig

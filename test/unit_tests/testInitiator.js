@@ -22,7 +22,7 @@ function mockLogger(consoleOutput) {
 
 const rootDir = path.join(process.cwd(), 'test_output');
 
-describe('init tests', function() {
+describe('Initiator tests', function() {
   describe('test askQuestions', function() {
     beforeEach(function() {
       mockery.enable({useCleanCache: true, warnOnReplace: false, warnOnUnregistered: false});
@@ -59,7 +59,7 @@ describe('init tests', function() {
         }
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, {
         browser: ['firefox'],
         mobile: true,
@@ -86,7 +86,7 @@ describe('init tests', function() {
         }
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, {browser: ['firefox'], mobile: 'random'});
       const answers = await nightwatchInitiator.askQuestions();
 
@@ -116,7 +116,7 @@ describe('init tests', function() {
         existsSync: () => false
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       let answers = {backend: 'both'};
@@ -155,7 +155,7 @@ describe('init tests', function() {
         existsSync: () => false
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       let answers = {
@@ -200,7 +200,7 @@ describe('init tests', function() {
         existsSync: () => false
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       let answers = {
@@ -251,7 +251,7 @@ describe('init tests', function() {
         existsSync: () => false
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       let answers = {
@@ -300,7 +300,7 @@ describe('init tests', function() {
         existsSync: () => false
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       let answers = {
@@ -340,7 +340,7 @@ describe('init tests', function() {
         readdirSync: () => []
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       let answers = {
@@ -385,7 +385,7 @@ describe('init tests', function() {
         readdirSync: () => ['file.txt']
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       let answers = {
@@ -431,7 +431,7 @@ describe('init tests', function() {
         existsSync: () => false
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       let answers = {
@@ -467,7 +467,7 @@ describe('init tests', function() {
     });
 
     it('with both (remote - other) and cucumber runner and seleniumServer false', function() {
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       let answers = {
@@ -511,7 +511,7 @@ describe('init tests', function() {
     });
 
     it('with both (remote - other) and mobile with mobile flag', function() {
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       let answers = {
@@ -563,7 +563,7 @@ describe('init tests', function() {
         readdirSync: () => []
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       let answers = {
@@ -613,7 +613,7 @@ describe('init tests', function() {
         existsSync: () => false
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       let answers = {};
@@ -627,7 +627,7 @@ describe('init tests', function() {
         existsSync: () => false
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       let answers = {
@@ -645,7 +645,7 @@ describe('init tests', function() {
         existsSync: () => false
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       let answers = {
@@ -663,7 +663,7 @@ describe('init tests', function() {
         existsSync: () => false
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       let answers = {
@@ -708,7 +708,7 @@ describe('init tests', function() {
         mobile: true
       };
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       const packagesToInstall = nightwatchInitiator.identifyPackagesToInstall(answers);
@@ -741,7 +741,7 @@ describe('init tests', function() {
         mobile: true
       };
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       const packagesToInstall = nightwatchInitiator.identifyPackagesToInstall(answers);
@@ -771,7 +771,7 @@ describe('init tests', function() {
         backend: 'both'
       };
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       const packagesToInstall = nightwatchInitiator.identifyPackagesToInstall(answers);
@@ -797,7 +797,7 @@ describe('init tests', function() {
         seleniumServer: true
       };
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       const packagesToInstall = nightwatchInitiator.identifyPackagesToInstall(answers);
@@ -836,7 +836,7 @@ describe('init tests', function() {
 
       const packagesToInstall = ['nightwatch', '@types/nightwatch', '@nightwatch/selenium-server', '@nightwatch/mobile-helper'];
 
-      const {installPackages} = require('../../lib/common');
+      const {installPackages} = require('../../lib/common.js');
       installPackages(packagesToInstall);
 
       // Check the commands executed
@@ -889,7 +889,7 @@ describe('init tests', function() {
         }
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       nightwatchInitiator.setupTypescript();
@@ -920,7 +920,7 @@ describe('init tests', function() {
         }
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       nightwatchInitiator.setupTypescript();
@@ -953,7 +953,7 @@ describe('init tests', function() {
         }
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       nightwatchInitiator.setupTypescript();
@@ -996,7 +996,7 @@ describe('init tests', function() {
         uiFramework: 'react'
       };
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       nightwatchInitiator.setupComponentTesting(answers);
@@ -1031,7 +1031,7 @@ describe('init tests', function() {
         }
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
       const configDestPath = await nightwatchInitiator.getConfigDestPath();
 
@@ -1061,7 +1061,7 @@ describe('init tests', function() {
         }
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
       const configDestPath = await nightwatchInitiator.getConfigDestPath();
 
@@ -1092,7 +1092,7 @@ describe('init tests', function() {
         }
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
       const configDestPath = await nightwatchInitiator.getConfigDestPath();
 
@@ -1117,7 +1117,7 @@ describe('init tests', function() {
         }
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
       const configDestPath = await nightwatchInitiator.getConfigDestPath();
 
@@ -1151,7 +1151,7 @@ describe('init tests', function() {
         }
       });
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
       const configDestPath = await nightwatchInitiator.getConfigDestPath();
 
@@ -1191,7 +1191,7 @@ describe('init tests', function() {
         plugins: ['@nightwatch/react']
       };
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       nightwatchInitiator.generateConfig(answers, 'test_config.conf.js');
@@ -1229,7 +1229,7 @@ describe('init tests', function() {
         mobile: true
       };
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       nightwatchInitiator.generateConfig(answers, 'test_config.conf.js');
@@ -1277,7 +1277,7 @@ describe('init tests', function() {
         mobile: true
       };
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       nightwatchInitiator.generateConfig(answers, 'test_config.conf.js');
@@ -1335,7 +1335,7 @@ describe('init tests', function() {
         allowAnonymousMetrics: false
       };
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       nightwatchInitiator.generateConfig(answers, 'test_config.conf.js');
@@ -1392,7 +1392,7 @@ describe('init tests', function() {
         allowAnonymousMetrics: false
       };
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       nightwatchInitiator.generateConfig(answers, 'test_config.conf.js');
@@ -1454,7 +1454,7 @@ describe('init tests', function() {
         mobile: true
       };
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       nightwatchInitiator.generateConfig(answers, 'test_config.conf.js');
@@ -1514,7 +1514,7 @@ describe('init tests', function() {
         mobile: true
       };
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
       nightwatchInitiator.otherInfo.tsOutDir = 'dist';
 
@@ -1576,7 +1576,7 @@ describe('init tests', function() {
         allowAnonymousMetrics: false
       };
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
       assert.strictEqual(nightwatchInitiator.client_id, '3141-5926-5358-9793');
@@ -1622,7 +1622,7 @@ describe('init tests', function() {
         allowAnonymousMetrics: true
       };
 
-      const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
       const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
       nightwatchInitiator.otherInfo.tsOutDir = 'dist';
 
@@ -1653,7 +1653,7 @@ describe('test identifyWebdriversToInstall', function() {
       browsers: ['chrome', 'firefox', 'safari']
     };
 
-    const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+    const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
     const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
     const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
@@ -1671,7 +1671,7 @@ describe('test identifyWebdriversToInstall', function() {
       mobileBrowsers: ['chrome', 'firefox']
     };
 
-    const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+    const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
     const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
     const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
@@ -1689,7 +1689,7 @@ describe('test identifyWebdriversToInstall', function() {
       mobilePlatform: 'android'
     };
 
-    const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+    const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
     const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
     const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
@@ -1705,7 +1705,7 @@ describe('test identifyWebdriversToInstall', function() {
       mobilePlatform: 'both'
     };
 
-    const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+    const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
     const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
     const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
@@ -1722,7 +1722,7 @@ describe('test identifyWebdriversToInstall', function() {
       mobilePlatform: 'ios'
     };
 
-    const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+    const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
     const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
     const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
@@ -1738,7 +1738,7 @@ describe('test identifyWebdriversToInstall', function() {
       mobileBrowsers: ['safari']
     };
 
-    const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+    const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
     const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
     const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
@@ -1755,7 +1755,7 @@ describe('test identifyWebdriversToInstall', function() {
       mobilePlatform: 'both'
     };
 
-    const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+    const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
     const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
     const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
