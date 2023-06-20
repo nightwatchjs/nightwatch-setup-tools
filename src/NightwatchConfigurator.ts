@@ -11,7 +11,7 @@ import {ConfigGeneratorAnswers, MobileHelperResult, NightwatchConfig} from './in
 import NPMCliPackageJson from '@npmcli/package-json';
 
 export default class NightwatchConfigurator {
-  private nightwatchPkgConfig: {[key: string]: any}; // TODO: ask Priyansh
+  private nightwatchPkgConfig: {[key: string]: any};
   private nightwatchConfigFile: NightwatchConfig | false;
   private packageJson: NPMCliPackageJson | undefined;
   private rootDir: string;
@@ -46,7 +46,6 @@ export default class NightwatchConfigurator {
 
   private async loadConfig(): Promise<void> {
     this.packageJson = await PackageJson.load(this.rootDir);
-    // TODO: ask priyansh
     this.nightwatchPkgConfig = (<{[key: string]: any}> this.packageJson.content).nightwatch || {};
     this.nightwatchPkgConfig.plugins = this.nightwatchPkgConfig.plugins || [];
     this.nightwatchPkgConfig.test_settings = this.nightwatchPkgConfig.test_settings || {};
@@ -94,7 +93,7 @@ export default class NightwatchConfigurator {
 
     packageJson.update({
       nightwatch: this.nightwatchPkgConfig
-    } as {[key: string]: any}); // TODO: ask priyansh
+    } as {[key: string]: any});
 
     await packageJson.save();
   }
@@ -364,7 +363,6 @@ export default class NightwatchConfigurator {
             automationName: 'UiAutomator2',
             // Android Virtual Device to run tests on
             avd: 'nightwatch-android-11',
-            //TODO: fix this
             app: `${this.rootDir}/nightwatch/sample-apps/wikipedia.apk`,
             appPackage: 'org.wikipedia',
             appActivity: 'org.wikipedia.main.MainActivity',
@@ -383,8 +381,6 @@ export default class NightwatchConfigurator {
           platformName: 'android',
           'appium:options': {
             automationName: 'UiAutomator2',
-
-            // TODO: fix this
             app: `${this.rootDir}/nightwatch/sample-apps/wikipedia.apk`,
             appPackage: 'org.wikipedia',
             appActivity: 'org.wikipedia.main.MainActivity',
@@ -406,8 +402,6 @@ export default class NightwatchConfigurator {
           'appium:options': {
             automationName: 'XCUITest',
             deviceName: 'iPhone 13',
-
-            // TODO: fix this
             app: `${this.rootDir}/nightwatch/sample-apps/wikipedia.zip`,
             bundleId: 'org.wikimedia.wikipedia',
             newCommandTimeout: 0
@@ -422,7 +416,6 @@ export default class NightwatchConfigurator {
           platformName: 'ios',
           'appium:options': {
             automationName: 'XCUITest',
-            //TODO: fix this
             app: `${this.rootDir}/nightwatch/sample-apps/wikipedia.zip`,
             bundleId: 'org.wikimedia.wikipedia',
             newCommandTimeout: 0

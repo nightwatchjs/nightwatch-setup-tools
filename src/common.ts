@@ -15,6 +15,7 @@ export function installPackages(packagesToInstall: string[], rootDir: string): v
     return;
   }
 
+  // TODO: maybe install based on version
   Logger.info('Installing the following packages:');
   for (const pack of packagesToInstall) {
     Logger.info(`- ${pack}`);
