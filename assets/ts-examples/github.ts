@@ -17,8 +17,8 @@ const home: NightwatchTests = {
 
         return actions.keyDown(this.Keys['ENTER']).keyUp(this.Keys['ENTER']);
       })
-      .waitForElementVisible('.header-search-input')
-      .assert.valueContains('.header-search-input', 'nightwatch')
+      .waitForElementVisible('.header-search-button')
+      .assert.textEquals('.header-search-button', 'nightwatch')
       .waitForElementVisible('.repo-list-item:first-child')
       .assert.textContains(
         '.repo-list-item:first-child',
