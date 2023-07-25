@@ -9,5 +9,8 @@
     "skipLibCheck": true,
     "allowJs": true,
     "forceConsistentCasingInFileNames":true
+  },
+  "ts-node": {
+    "swc": true
   }
 }

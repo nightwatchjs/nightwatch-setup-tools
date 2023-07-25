@@ -326,7 +326,7 @@ export default class NightwatchInitiator {
     const packages: string[] = ['nightwatch'];
 
     if (answers.language === 'ts') {
-      packages.push('typescript', '@types/nightwatch', 'ts-node');
+      packages.push('typescript', '@swc/core', 'ts-node');
     }
 
     if (answers.runner === Runner.Cucumber) {
@@ -543,20 +543,18 @@ export default class NightwatchInitiator {
   identifyWebdriversToInstall(answers: ConfigGeneratorAnswers): string[] {
     const webdrivers: string[] = [];
 
-    const localWebTestingOnFirefox = answers.browsers?.includes('firefox') || answers.mobileBrowsers?.includes('firefox');
-    if (localWebTestingOnFirefox) {
-      webdrivers.push('geckodriver');
-    }
-
-    const localWebTestingOnChrome = answers.browsers?.includes('chrome') || answers.mobileBrowsers?.includes('chrome');
+    // for ChromeWebView while testing mobile apps on real Android device with latest Chrome browser.
+    // custom chromedriver version is downloaded by @nightwatch/mobile-helper for emulators (which
+    // comes with older Chrome browser versions).
     const localAppTestingOnAndroid = (isAppTestingSetup(answers) && answers.backend !== 'remote' &&
       answers.mobilePlatform && ['android', 'both'].includes(answers.mobilePlatform));
 
-    if (localWebTestingOnChrome || localAppTestingOnAndroid) {
+    if (localAppTestingOnAndroid) {
       webdrivers.push('chromedriver');
     }
 
     const localWebTestingOnSafari = answers.browsers?.includes('safari') || answers.mobileBrowsers?.includes('safari');
+    // for SafariWebView while testing mobile apps on iOS
     const localAppTestingOnIos = (isAppTestingSetup(answers) && answers.backend !== 'remote' &&
       answers.mobilePlatform && ['ios', 'both'].includes(answers.mobilePlatform));
 
@@ -568,14 +566,13 @@ export default class NightwatchInitiator {
   }
 
   async installWebdrivers(webdriversToInstall: string[]) {
-    Logger.info('Installing/updating the following webdrivers:');
+    Logger.info('Installing the following webdrivers:');
     for (const webdriver of webdriversToInstall) {
       Logger.info(`- ${webdriver}`);
     }
     Logger.info();
 
     const driversDownloadedFromNPM: { [key: string]: string } = {
-      geckodriver: 'Firefox',
       chromedriver: 'Chrome'
     };
 
@@ -777,8 +774,10 @@ export default class NightwatchInitiator {
     Logger.info('💬 Join our Discord community to find answers to your issues or queries. Or just join and say hi.');
     Logger.info(colors.cyan('   https://discord.gg/SN8Da2X'), '\n');
   
-    // TODO: check why this was needed
-    // let exampleCommandsShared = false;
+    let directoryChange = '';
+    if (this.rootDir !== process.cwd()) {
+      directoryChange = `cd ${relativeToRootDir}\n  `;
+    }
 
     let configFlag = '';
     if (this.otherInfo.nonDefaultConfigName) {
@@ -786,14 +785,9 @@ export default class NightwatchInitiator {
     }
 
     if (isWebTestingSetup(answers) && !this.options?.mobile) {
-      // web-testing setup and --mobile flag is not used (testing on desktop browsers).
-      // exampleCommandsShared = true;
+      // web-testing setup, with no `--mobile` flag (testing only on desktop browsers).
 
       Logger.info(colors.green('🚀 RUN EXAMPLE TESTS'), '\n');
-      if (this.rootDir !== process.cwd()) {
-        Logger.info('First, change directory to the root dir of your project:');
-        Logger.info(colors.cyan(`  cd ${relativeToRootDir}`), '\n');
-      }
 
       let envFlag = '';
       if (answers.backend === 'remote') {
@@ -802,11 +796,11 @@ export default class NightwatchInitiator {
 
       if (answers.runner === Runner.Cucumber) {
         Logger.info('To run your tests with CucumberJS, simply run:');
-        Logger.info(colors.cyan(`  npx nightwatch${envFlag}${configFlag}`), '\n');
+        Logger.info(colors.cyan(`  ${directoryChange}npx nightwatch${envFlag}${configFlag}`), '\n');
 
         if (this.otherInfo.cucumberExamplesAdded) {
           Logger.info('To run an example test with CucumberJS, run:');
-          Logger.info(colors.cyan(`  npx nightwatch ${answers.examplesLocation}${envFlag}${configFlag}`), '\n');
+          Logger.info(colors.cyan(`  ${directoryChange}npx nightwatch ${answers.examplesLocation}${envFlag}${configFlag}`), '\n');
         }
 
         Logger.info('For more details on using CucumberJS with Nightwatch, visit:');
@@ -817,13 +811,13 @@ export default class NightwatchInitiator {
         if (answers.language === 'ts') {
           Logger.info('To run all examples, run:');
           Logger.info(
-            colors.cyan(`  npx nightwatch .${path.sep}${this.otherInfo.examplesJsSrc}${envFlag}${configFlag}\n`)
+            colors.cyan(`  ${directoryChange}npx nightwatch .${path.sep}${this.otherInfo.examplesJsSrc}${envFlag}${configFlag}\n`)
           );
 
           Logger.info('To run a single example (github.ts), run:');
           Logger.info(
             colors.cyan(
-              `  npx nightwatch .${path.sep}${path.join(
+              `  ${directoryChange}npx nightwatch .${path.sep}${path.join(
                 this.otherInfo.examplesJsSrc || '',
                 'github.ts'
               )}${envFlag}${configFlag}\n`
@@ -833,7 +827,7 @@ export default class NightwatchInitiator {
           Logger.info('To run all examples, run:');
           Logger.info(
             colors.cyan(
-              `  npx nightwatch .${path.sep}${path.join(
+              `  ${directoryChange}npx nightwatch .${path.sep}${path.join(
                 this.otherInfo.examplesJsSrc || '',
                 EXAMPLE_TEST_FOLDER
               )}${envFlag}${configFlag}\n`
@@ -843,7 +837,7 @@ export default class NightwatchInitiator {
           Logger.info('To run a single example (ecosia.js), run:');
           Logger.info(
             colors.cyan(
-              `  npx nightwatch .${path.sep}${path.join(
+              `  ${directoryChange}npx nightwatch .${path.sep}${path.join(
                 this.otherInfo.examplesJsSrc || '',
                 EXAMPLE_TEST_FOLDER,
                 'basic',
@@ -858,7 +852,7 @@ export default class NightwatchInitiator {
         Logger.info('To run a single example (ecosia.js), try:');
         Logger.info(
           colors.cyan(
-            `  npx nightwatch ${path.join(
+            `  ${directoryChange}npx nightwatch ${path.join(
               'node_modules',
               'nightwatch',
               'examples',
@@ -871,7 +865,7 @@ export default class NightwatchInitiator {
 
         Logger.info('To run all examples, try:');
         Logger.info(
-          colors.cyan(`  npx nightwatch ${path.join('node_modules', 'nightwatch', 'examples')}${envFlag}${configFlag}`),
+          colors.cyan(`  ${directoryChange}npx nightwatch ${path.join('node_modules', 'nightwatch', 'examples')}${envFlag}${configFlag}`),
           '\n'
         );
       }
@@ -887,15 +881,7 @@ export default class NightwatchInitiator {
       }
 
       Logger.info('To run tests on your local selenium-server, use command:');
-      Logger.info(colors.cyan(`  npx nightwatch --env selenium_server${configFlag}`), '\n');
-    }
-
-    if (answers.browsers?.includes('edge')) {
-      Logger.info(`${colors.red('Note:')} Microsoft Edge Webdriver is not installed automatically.`);
-      Logger.info(
-        'Please follow the below link ("Download" and "Standalone Usage" sections) to setup EdgeDriver manually:'
-      );
-      Logger.info(colors.cyan('  https://nightwatchjs.org/guide/browser-drivers-setup/edgedriver.html'), '\n');
+      Logger.info(colors.cyan(`  ${directoryChange}npx nightwatch --env selenium_server${configFlag}`), '\n');
     }
 
     // MOBILE WEB AND APP TESTS
