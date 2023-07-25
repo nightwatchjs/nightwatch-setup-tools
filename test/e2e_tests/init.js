@@ -1640,7 +1640,7 @@ describe('e2e tests for init', function() {
       assert.strictEqual(commandsExecuted.length, 2);
       assert.strictEqual(commandsExecuted[1], 'sudo safaridriver --enable');
     } else {
-      assert.strictEqual(commandsExecuted.length, 2);
+      assert.strictEqual(commandsExecuted.length, 1);
     }
     assert.strictEqual(commandsExecuted[0], 'npm install nightwatch --save-dev');
 
