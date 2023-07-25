@@ -509,7 +509,7 @@ export default class NightwatchConfigurator {
 
     await copyAppTestingExamples(answers, this.rootDir);
     this.addMobileTestingConfig(answers);
-    postMobileSetupInstructions(answers, mobileHelperResult, '', this.rootDir, '', false);
+    postMobileSetupInstructions(answers, mobileHelperResult, '', this.rootDir, '');
   }
 
   private printHelpForAdd() {
