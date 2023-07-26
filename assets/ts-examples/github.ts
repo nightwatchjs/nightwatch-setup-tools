@@ -17,11 +17,11 @@ const home: NightwatchTests = {
 
         return actions.keyDown(this.Keys['ENTER']).keyUp(this.Keys['ENTER']);
       })
-      .waitForElementVisible('.header-search-input')
-      .assert.valueContains('.header-search-input', 'nightwatch')
-      .waitForElementVisible('.repo-list-item:first-child')
+      .waitForElementVisible('.header-search-button')
+      .assert.textEquals('.header-search-button', 'nightwatch')
+      .waitForElementVisible('div[data-testid="results-list"]:first-child')
       .assert.textContains(
-        '.repo-list-item:first-child',
+        'div[data-testid="results-list"]:first-child',
         'End-to-end testing framework written in Node.js and using the W3C Webdriver API'
       );
   },

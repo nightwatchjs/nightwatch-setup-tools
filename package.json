@@ -9,8 +9,8 @@
     "prepublishOnly": "tsc --outDir dist",
     "create-nightwatch": "tsc && node dev-run.js",
     "esbuild": "esbuild --bundle src/index.ts --outdir=dist --platform=node --target=ES2019",
-    "test:unit": "npx nightwatch test/unit_tests",
-    "test:e2e": "npx nightwatch test/e2e_tests"
+    "test:unit": "npm run build && npx nightwatch test/unit_tests",
+    "test:e2e": "npm run build && npx nightwatch test/e2e_tests"
   },
   "keywords": [],
   "author": "Priyansh Garg, Binayak Ghosh",
@@ -26,7 +26,6 @@
     "@types/inquirer": "^8.2.1",
     "@types/minimist": "^1.2.2",
     "@types/mockery": "^1.4.30",
-    "@types/nightwatch": "^2.3.18",
     "@types/node": "^17.0.41",
     "@types/npmcli__package-json": "^2.0.0",
     "@types/uuid": "^8.3.4",
@@ -35,7 +34,7 @@
     "eslint": "^8.27.0",
     "mocha": "^10.1.0",
     "mockery": "^2.1.0",
-    "nightwatch": "^2.6.21",
+    "nightwatch": "^3.0.1",
     "nock": "^13.2.9",
     "typescript": "^4.7.3"
   },

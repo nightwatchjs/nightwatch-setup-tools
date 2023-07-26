@@ -7,7 +7,7 @@ const home: NightwatchTests = {
 
   'Google search test': () => {
     browser
-      .setValue('input[name=q]', 'nightwatchjs')
+      .setValue('textarea[name=q]', 'nightwatchjs')
       .perform(function(this: any) {
         const actions = this.actions({async: true});
 

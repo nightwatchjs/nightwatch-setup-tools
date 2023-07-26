@@ -715,7 +715,7 @@ describe('Initiator tests', function() {
 
       assert.strictEqual(packagesToInstall.length, 5);
       assert.strictEqual(packagesToInstall.includes('nightwatch'), true);
-      assert.strictEqual(packagesToInstall.includes('@types/nightwatch'), true);
+      assert.strictEqual(packagesToInstall.includes('@swc/core'), true);
       assert.strictEqual(packagesToInstall.includes('ts-node'), true);
       assert.strictEqual(packagesToInstall.includes('@nightwatch/selenium-server'), true);
       assert.strictEqual(packagesToInstall.includes('@nightwatch/mobile-helper'), true);
@@ -805,7 +805,7 @@ describe('Initiator tests', function() {
       assert.strictEqual(packagesToInstall.length, 6);
       assert.strictEqual(packagesToInstall.includes('nightwatch'), true);
       assert.strictEqual(packagesToInstall.includes('typescript'), true);
-      assert.strictEqual(packagesToInstall.includes('@types/nightwatch'), true);
+      assert.strictEqual(packagesToInstall.includes('@swc/core'), true);
       assert.strictEqual(packagesToInstall.includes('ts-node'), true);
       assert.strictEqual(packagesToInstall.includes('@cucumber/cucumber'), true);
       assert.strictEqual(packagesToInstall.includes('@nightwatch/selenium-server'), true);
@@ -834,7 +834,7 @@ describe('Initiator tests', function() {
         }
       });
 
-      const packagesToInstall = ['nightwatch', '@types/nightwatch', '@nightwatch/selenium-server', '@nightwatch/mobile-helper'];
+      const packagesToInstall = ['nightwatch', '@swc/core', '@nightwatch/selenium-server', '@nightwatch/mobile-helper'];
 
       const {installPackages} = require('../../lib/common.js');
       installPackages(packagesToInstall);
@@ -842,7 +842,7 @@ describe('Initiator tests', function() {
       // Check the commands executed
       assert.strictEqual(commandsExecuted.length, 4);
       assert.strictEqual(commandsExecuted[0], 'npm install nightwatch --save-dev');
-      assert.strictEqual(commandsExecuted[1], 'npm install @types/nightwatch --save-dev');
+      assert.strictEqual(commandsExecuted[1], 'npm install @swc/core --save-dev');
       assert.strictEqual(commandsExecuted[2], 'npm install @nightwatch/selenium-server --save-dev');
       assert.strictEqual(commandsExecuted[3], 'npm install @nightwatch/mobile-helper --save-dev');
 
@@ -853,7 +853,7 @@ describe('Initiator tests', function() {
       assert.strictEqual((output.match(/Done!/g) || []).length, 4);
       // Check the packages installed
       assert.strictEqual(output.includes('nightwatch'), true);
-      assert.strictEqual(output.includes('@types/nightwatch'), true);
+      assert.strictEqual(output.includes('@swc/core'), true);
       assert.strictEqual(output.includes('@nightwatch/selenium-server'), true);
       assert.strictEqual(output.includes('@nightwatch/mobile-helper'), true);
     });
@@ -1658,9 +1658,7 @@ describe('test identifyWebdriversToInstall', function() {
 
     const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
 
-    assert.strictEqual(webdriversToInstall.length, 3);
-    assert.strictEqual(webdriversToInstall.includes('geckodriver'), true);
-    assert.strictEqual(webdriversToInstall.includes('chromedriver'), true);
+    assert.strictEqual(webdriversToInstall.length, 1);
     assert.strictEqual(webdriversToInstall.includes('safaridriver'), true);
   });
 
@@ -1676,9 +1674,7 @@ describe('test identifyWebdriversToInstall', function() {
 
     const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
 
-    assert.strictEqual(webdriversToInstall.length, 3);
-    assert.strictEqual(webdriversToInstall.includes('geckodriver'), true);
-    assert.strictEqual(webdriversToInstall.includes('chromedriver'), true);
+    assert.strictEqual(webdriversToInstall.length, 1);
     assert.strictEqual(webdriversToInstall.includes('safaridriver'), true);
   });
 
@@ -1694,8 +1690,7 @@ describe('test identifyWebdriversToInstall', function() {
 
     const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
 
-    assert.strictEqual(webdriversToInstall.length, 2);
-    assert.strictEqual(webdriversToInstall.includes('geckodriver'), true);
+    assert.strictEqual(webdriversToInstall.length, 1);
     assert.strictEqual(webdriversToInstall.includes('chromedriver'), true);
   });
 
@@ -1727,8 +1722,7 @@ describe('test identifyWebdriversToInstall', function() {
 
     const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
 
-    assert.strictEqual(webdriversToInstall.length, 2);
-    assert.strictEqual(webdriversToInstall.includes('chromedriver'), true);
+    assert.strictEqual(webdriversToInstall.length, 1);
     assert.strictEqual(webdriversToInstall.includes('safaridriver'), true);
   });
 
@@ -1760,7 +1754,6 @@ describe('test identifyWebdriversToInstall', function() {
 
     const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
 
-    assert.strictEqual(webdriversToInstall.length, 1);
-    assert.strictEqual(webdriversToInstall.includes('geckodriver'), true);
+    assert.strictEqual(webdriversToInstall.length, 0);
   });
 });

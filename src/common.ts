@@ -86,8 +86,7 @@ export function postMobileSetupInstructions(answers: ConfigGeneratorAnswers,
   mobileHelperResult: MobileHelperResult,
   configFlag: string,
   rootDir: string,
-  examplesJsSrc?: string,
-  isInitiation = true) {
+  examplesJsSrc?: string) {
   const cucumberExample = `npx nightwatch${configFlag}`;
   const relativeToRootDir = path.relative(process.cwd(), rootDir) || '.';
 
@@ -313,11 +312,6 @@ export function postMobileSetupInstructions(answers: ConfigGeneratorAnswers,
         }
       }
     }
-  }
-
-  if (isInitiation) {
-    // TODO: separate flows if required
-    console.log('Initializing nightwatch');
   }
 
   if (!exampleCommandsShared && isRemoteMobileTestingSetup(answers) && answers.cloudProvider === 'browserstack') {
