@@ -19,9 +19,9 @@ const home: NightwatchTests = {
       })
       .waitForElementVisible('.header-search-button')
       .assert.textEquals('.header-search-button', 'nightwatch')
-      .waitForElementVisible('.repo-list-item:first-child')
+      .waitForElementVisible('div[data-testid="results-list"]:first-child')
       .assert.textContains(
-        '.repo-list-item:first-child',
+        'div[data-testid="results-list"]:first-child',
         'End-to-end testing framework written in Node.js and using the W3C Webdriver API'
       );
   },
