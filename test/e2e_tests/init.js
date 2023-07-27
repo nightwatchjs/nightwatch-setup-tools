@@ -87,7 +87,8 @@ describe('e2e tests for init', function() {
       yellow: colorFn,
       magenta: colorFn,
       cyan: colorFn,
-      red: colorFn
+      red: colorFn,
+      gray: colorFn
     });
 
     const answers = {
@@ -239,7 +240,8 @@ describe('e2e tests for init', function() {
       yellow: colorFn,
       magenta: colorFn,
       cyan: colorFn,
-      red: colorFn
+      red: colorFn,
+      gray: colorFn
     });
 
     const answers = {
@@ -387,16 +389,16 @@ describe('e2e tests for init', function() {
     };
 
     const colorFn = (arg) => arg;
-    mockery.registerMock('ansi-colors', {
+    const mockedColors = {
       green: colorFn,
       yellow: colorFn,
       magenta: colorFn,
       cyan: colorFn,
       red: colorFn,
-      gray: {
-        italic: colorFn
-      }
-    });
+      gray: colorFn
+    };
+    mockedColors.gray.italic = colorFn;
+    mockery.registerMock('ansi-colors', mockedColors);
 
     let androidSetupOptions;
     mockery.registerMock('@nightwatch/mobile-helper', {
@@ -529,16 +531,18 @@ describe('e2e tests for init', function() {
 
     // Test Packages and webdrivers installed
     if (process.platform === 'darwin') {
-      assert.strictEqual(commandsExecuted.length, 7);
-      assert.strictEqual(commandsExecuted[5], 'sudo safaridriver --enable');
+      assert.strictEqual(commandsExecuted.length, 8);
+      assert.strictEqual(commandsExecuted[4], 'sudo safaridriver --enable');
+      assert.strictEqual(commandsExecuted[5], 'npx appium driver install uiautomator2');
+      assert.strictEqual(commandsExecuted[6], 'npx appium driver install xcuitest');
     } else {
       assert.strictEqual(commandsExecuted.length, 6);
+      assert.strictEqual(commandsExecuted[4], 'npx appium driver install uiautomator2');
     }
     assert.strictEqual(commandsExecuted[0], 'npm install nightwatch --save-dev');
     assert.strictEqual(commandsExecuted[1], 'npm install appium --save-dev');
     assert.strictEqual(commandsExecuted[2], 'npm install @nightwatch/react --save-dev');
     assert.strictEqual(commandsExecuted[3], 'npm install @nightwatch/mobile-helper --save-dev');
-    assert.strictEqual(commandsExecuted[4], 'npm install chromedriver --save-dev');
 
     // Test mobile-helper setup
     assert.deepStrictEqual(androidSetupOptions, {browsers: [], appium: true});
@@ -557,7 +561,7 @@ describe('e2e tests for init', function() {
     const output = consoleOutput.toString();
     assert.strictEqual(output.includes('Installing nightwatch'), true);
     assert.strictEqual(output.includes('Success! Configuration file generated at:'), true);
-    assert.strictEqual(output.includes('Installing webdriver for Chrome (chromedriver)...'), true);
+    assert.strictEqual(output.includes('Installing appium driver for Android (uiautomator2)...'), true);
     assert.strictEqual(output.includes('Generating example files...'), true);
     assert.strictEqual(output.includes('Success! Generated some example files at \'nightwatch\'.'), true);
     assert.strictEqual(output.includes('Please set the credentials required to run tests on your cloud provider'), true);
@@ -571,23 +575,26 @@ describe('e2e tests for init', function() {
       true
     );
     assert.strictEqual(output.includes('[Selenium Server]'), false);
-
     assert.strictEqual(output.includes('RUN MOBILE EXAMPLE TESTS'), true);
-    assert.strictEqual(output.includes('First, change directory to the root dir of your project:'), true);
-    assert.strictEqual(output.includes('cd test_output'), true);
+    assert.strictEqual(output.includes('First, change directory to the root dir of your project:'), false);
     assert.strictEqual(output.includes('To run an example test on Real Android device'), true);
     assert.strictEqual(output.includes('* Make sure your device is connected'), true);
     assert.strictEqual(output.includes('* Make sure required browsers are installed.'), true);
+    assert.strictEqual(output.includes('Change directory:\n    cd test_output'), true);
     assert.strictEqual(output.includes('For mobile app tests, run:'), true);
     assert.strictEqual(output.includes(`${path.join('mobile-app-tests', 'wikipedia-android.js')} --env app.android.real`), true);
     assert.strictEqual(output.includes('To run an example test on Android Emulator'), false);
 
     if (process.platform === 'darwin') {
+      assert.strictEqual(output.includes('Installing the following webdrivers:\n- safaridriver'), true);
+      assert.strictEqual(output.includes('Installing appium driver for iOS (xcuitest)...'), true);
+
       assert.strictEqual(output.includes('To run an example test on iOS simulator'), true);
       assert.strictEqual(output.includes('For mobile app tests, run:'), true);
       assert.strictEqual(output.includes('mobile-app-tests/wikipedia-ios.js --env app.ios.simulator'), true);
       assert.strictEqual(output.includes('iOS setup incomplete...'), true);
       assert.strictEqual(output.includes('Please follow the guide above'), true);
+      assert.strictEqual(output.includes('re-run the following commands (run cd test_output first):'), true); 
       assert.strictEqual(output.includes('For iOS setup, run:'), true);
       assert.strictEqual(output.includes('For iOS help, run:'), true);
       assert.strictEqual(output.includes('After completing the setup...'), true);
@@ -633,7 +640,8 @@ describe('e2e tests for init', function() {
       yellow: colorFn,
       magenta: colorFn,
       cyan: colorFn,
-      red: colorFn
+      red: colorFn,
+      gray: colorFn
     });
 
     let appDownloaderCalled = false;
@@ -802,16 +810,16 @@ describe('e2e tests for init', function() {
     });
 
     const colorFn = (arg) => arg;
-    mockery.registerMock('ansi-colors', {
+    const mockedColors = {
       green: colorFn,
       yellow: colorFn,
       magenta: colorFn,
       cyan: colorFn,
       red: colorFn,
-      gray: {
-        italic: colorFn
-      }
-    });
+      gray: colorFn
+    };
+    mockedColors.gray.italic = colorFn;
+    mockery.registerMock('ansi-colors', mockedColors);
 
     let androidSetupOptionsPassed;
     let androidSetupRootDirPassed;
@@ -1010,11 +1018,11 @@ describe('e2e tests for init', function() {
     assert.strictEqual(output.includes('[Selenium Server]'), false);
 
     assert.strictEqual(output.includes('RUN MOBILE EXAMPLE TESTS'), true);
-    assert.strictEqual(output.includes('First, change directory to the root dir of your project:'), true);
-    assert.strictEqual(output.includes('cd test_output'), true);
+    assert.strictEqual(output.includes('First, change directory to the root dir of your project:'), false);
     assert.strictEqual(output.includes('To run an example test on Real Android device'), true);
     assert.strictEqual(output.includes('* Make sure your device is connected'), true);
     assert.strictEqual(output.includes('* Make sure required browsers are installed.'), true);
+    assert.strictEqual(output.includes('Change directory:\n    cd test_output'), true);
     assert.strictEqual(output.includes('For mobile web tests, run:'), true);
     assert.strictEqual(output.includes('github.ts --config new-config.conf.js --env android.real.firefox'), true);
     assert.strictEqual(output.includes('github.ts --config new-config.conf.js --env android.real.chrome'), false);
@@ -1059,7 +1067,8 @@ describe('e2e tests for init', function() {
       yellow: colorFn,
       magenta: colorFn,
       cyan: colorFn,
-      red: colorFn
+      red: colorFn,
+      gray: colorFn
     });
 
     const answers = require('../../lib/defaults.json');
@@ -1194,16 +1203,16 @@ describe('e2e tests for init', function() {
     });
 
     const colorFn = (arg) => arg;
-    mockery.registerMock('ansi-colors', {
+    const mockedColors = {
       green: colorFn,
       yellow: colorFn,
       magenta: colorFn,
       cyan: colorFn,
       red: colorFn,
-      gray: {
-        italic: colorFn
-      }
-    });
+      gray: colorFn
+    };
+    mockedColors.gray.italic = colorFn;
+    mockery.registerMock('ansi-colors', mockedColors);
 
     mockery.registerMock('@nightwatch/mobile-helper', {
       AndroidSetup: class {
@@ -1351,6 +1360,7 @@ describe('e2e tests for init', function() {
     assert.strictEqual(output.includes('RUN MOBILE EXAMPLE TESTS'), true);
     assert.strictEqual(output.includes('Android setup failed...'), true);
     assert.strictEqual(output.includes('Please go through the setup logs above'), true);
+    assert.strictEqual(output.includes('re-run the following commands (run cd test_output first):'), true);
     assert.strictEqual(output.includes('To setup Android, run:'), true);
     assert.strictEqual(output.includes('For Android help, run:'), true);
     assert.strictEqual(output.includes('Once setup is complete...'), true);
@@ -1391,16 +1401,16 @@ describe('e2e tests for init', function() {
     };
 
     const colorFn = (arg) => arg;
-    mockery.registerMock('ansi-colors', {
+    const mockedColors = {
       green: colorFn,
       yellow: colorFn,
       magenta: colorFn,
       cyan: colorFn,
       red: colorFn,
-      gray: {
-        italic: colorFn
-      }
-    });
+      gray: colorFn
+    };
+    mockedColors.gray.italic = colorFn;
+    mockery.registerMock('ansi-colors', mockedColors);
 
     let androidSetupOptions;
     mockery.registerMock('@nightwatch/mobile-helper', {
@@ -1483,7 +1493,7 @@ describe('e2e tests for init', function() {
     assert.strictEqual(commandsExecuted[0], 'npm install nightwatch --save-dev');
     assert.strictEqual(commandsExecuted[1], 'npm install appium --save-dev');
     assert.strictEqual(commandsExecuted[2], 'npm install @nightwatch/mobile-helper --save-dev');
-    assert.strictEqual(commandsExecuted[3], 'npm install chromedriver --save-dev');
+    assert.strictEqual(commandsExecuted[3], 'npx appium driver install uiautomator2');
     assert.strictEqual(commandsExecuted[4], 'npx nightwatch --version');
 
     // Test mobile-helper setup
@@ -1504,7 +1514,7 @@ describe('e2e tests for init', function() {
     assert.strictEqual(output.includes('Installing nightwatch'), true);
     assert.strictEqual(output.includes('Installing appium'), true);
     assert.strictEqual(output.includes('Installing @nightwatch/mobile-helper'), true);
-    assert.strictEqual(output.includes('Installing webdriver for Chrome (chromedriver)...'), true);
+    assert.strictEqual(output.includes('Installing appium driver for Android (uiautomator2)...'), true);
     assert.strictEqual(output.includes('Generating mobile-app example tests...'), true);
     assert.strictEqual(output.includes('Downloading sample android app...'), true);
     assert.strictEqual(output.includes('Success! Configuration file generated at:'), true);
@@ -1515,10 +1525,11 @@ describe('e2e tests for init', function() {
     assert.strictEqual(output.includes('RUN EXAMPLE TESTS'), false);
 
     assert.strictEqual(output.includes('RUN MOBILE EXAMPLE TESTS'), true);
-    assert.strictEqual(output.includes('change directory to the root dir'), true);
+    assert.strictEqual(output.includes('change directory to the root dir'), false);
     assert.strictEqual(output.includes('To run an example test on Real Android device'), true);
     assert.strictEqual(output.includes('* Make sure your device is connected'), true);
     assert.strictEqual(output.includes('* Make sure required browsers are installed.'), true);
+    assert.strictEqual(output.includes('Change directory:\n    cd test_output'), true);
     assert.strictEqual(output.includes('For mobile app tests, run:'), true);
     assert.strictEqual(output.includes(`${path.join('mobile-app-tests', 'wikipedia-android.js')} --env app.android.real`), true);
     assert.strictEqual(output.includes('To run an example test on Android Emulator'), true);
@@ -1555,7 +1566,8 @@ describe('e2e tests for init', function() {
       yellow: colorFn,
       magenta: colorFn,
       cyan: colorFn,
-      red: colorFn
+      red: colorFn,
+      gray: colorFn
     });
 
     const answers = {
@@ -1681,7 +1693,8 @@ describe('e2e tests for init', function() {
       yellow: colorFn,
       magenta: colorFn,
       cyan: colorFn,
-      red: colorFn
+      red: colorFn,
+      gray: colorFn
     });
 
     const answers = {
