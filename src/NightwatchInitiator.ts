@@ -84,10 +84,10 @@ export default class NightwatchInitiator {
       this.checkJavaInstallation();
     }
 
-    // Install/Update webdrivers
-    const webdriversToInstall = this.identifyWebdriversToInstall(answers);
-    if (webdriversToInstall.length) {
-      await this.installWebdrivers(webdriversToInstall);
+    // Install drivers
+    const driversToInstall = this.identifyDriversToInstall(answers);
+    if (driversToInstall.length) {
+      await this.installDrivers(driversToInstall);
     }
 
     if (!this.onlyConfig) {
@@ -540,58 +540,40 @@ export default class NightwatchInitiator {
     }
   }
 
-  identifyWebdriversToInstall(answers: ConfigGeneratorAnswers): string[] {
-    const webdrivers: string[] = [];
+  identifyDriversToInstall(answers: ConfigGeneratorAnswers): string[] {
+    const drivers: string[] = [];
 
-    // for ChromeWebView while testing mobile apps on real Android device with latest Chrome browser.
-    // custom chromedriver version is downloaded by @nightwatch/mobile-helper for emulators (which
-    // comes with older Chrome browser versions).
     const localAppTestingOnAndroid = (isAppTestingSetup(answers) && answers.backend !== 'remote' &&
       answers.mobilePlatform && ['android', 'both'].includes(answers.mobilePlatform));
 
     if (localAppTestingOnAndroid) {
-      webdrivers.push('chromedriver');
+      drivers.push('uiautomator2');
     }
 
     const localWebTestingOnSafari = answers.browsers?.includes('safari') || answers.mobileBrowsers?.includes('safari');
-    // for SafariWebView while testing mobile apps on iOS
     const localAppTestingOnIos = (isAppTestingSetup(answers) && answers.backend !== 'remote' &&
       answers.mobilePlatform && ['ios', 'both'].includes(answers.mobilePlatform));
 
     if (localWebTestingOnSafari || localAppTestingOnIos) {
-      webdrivers.push('safaridriver');
+      drivers.push('safaridriver');
+    }
+    if (localAppTestingOnIos) {
+      drivers.push('xcuitest');
     }
 
-    return webdrivers;
+    return drivers;
   }
 
-  async installWebdrivers(webdriversToInstall: string[]) {
-    Logger.info('Installing the following webdrivers:');
-    for (const webdriver of webdriversToInstall) {
-      Logger.info(`- ${webdriver}`);
-    }
-    Logger.info();
+  async installDrivers(driversToInstall: string[]) {
+    if (driversToInstall.includes('safaridriver')) {
+      Logger.info('Installing the following webdrivers:\n- safaridriver\n');
 
-    const driversDownloadedFromNPM: { [key: string]: string } = {
-      chromedriver: 'Chrome'
-    };
-
-    for (const webdriver of webdriversToInstall) {
-      if (webdriver in driversDownloadedFromNPM) {
-        Logger.info(`Installing webdriver for ${driversDownloadedFromNPM[webdriver]} (${webdriver})...`);
-        try {
-          execSync(`npm install ${webdriver} --save-dev`, {
-            stdio: ['inherit', 'pipe', 'inherit'],
-            cwd: this.rootDir
-          });
-          Logger.info(colors.green('Done!'), '\n');
-        } catch (err) {
-          Logger.error(`Failed to install ${webdriver}. Please run 'npm install ${webdriver} --save-dev' later.\n`);
-        }
+      // remove safaridriver from driversToInstall
+      const safaridriverIndex = driversToInstall.indexOf('safaridriver');
+      if (safaridriverIndex > -1) {
+        driversToInstall.splice(safaridriverIndex, 1);
       }
-    }
 
-    if (webdriversToInstall.includes('safaridriver')) {
       try {
         const answers = await prompt([
           {
@@ -619,6 +601,36 @@ export default class NightwatchInitiator {
         }
       } catch (err) {
         Logger.error('Failed to enable safaridriver. Please run \'sudo safaridriver --enable\' later.\n');
+      }
+    }
+
+    if (!driversToInstall.length) {
+      return;
+    }
+
+    Logger.info('Installing the following appium drivers:');
+    for (const driver of driversToInstall) {
+      Logger.info(`- ${driver}`);
+    }
+    Logger.info();
+
+    const appiumDrivers: { [key: string]: string } = {
+      uiautomator2: 'Android',
+      xcuitest: 'iOS'
+    };
+
+    for (const driver of driversToInstall) {
+      if (driver in appiumDrivers) {
+        Logger.info(`Installing appium driver for ${appiumDrivers[driver]} (${driver})...`);
+        try {
+          execSync(`npx appium driver install ${driver}`, {
+            stdio: ['inherit', 'pipe', 'inherit'],
+            cwd: this.rootDir
+          });
+          Logger.info(colors.green('Done!'), '\n');
+        } catch (err) {
+          Logger.error(`Failed to install ${driver}.\n`);
+        }
       }
     }
   }

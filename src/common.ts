@@ -82,11 +82,13 @@ export async function copyAppTestingExamples(answers: ConfigGeneratorAnswers, ro
   }
 }
 
-export function postMobileSetupInstructions(answers: ConfigGeneratorAnswers,
+export function postMobileSetupInstructions(
+  answers: ConfigGeneratorAnswers,
   mobileHelperResult: MobileHelperResult,
   configFlag: string,
   rootDir: string,
-  examplesJsSrc?: string) {
+  examplesJsSrc?: string
+) {
   const cucumberExample = `npx nightwatch${configFlag}`;
   const relativeToRootDir = path.relative(process.cwd(), rootDir) || '.';
 
@@ -149,11 +151,13 @@ export function postMobileSetupInstructions(answers: ConfigGeneratorAnswers,
     Logger.info(colors.green('🚀 RUN MOBILE EXAMPLE TESTS'), '\n');
 
     if (['android', 'both'].includes(answers.mobilePlatform)) {
-      const errorHelp = 'Please go through the setup logs above to know the actual cause of failure.\n\nOr, re-run the following commands:';
+      const errorHelp = 'Please go through the setup logs above to know the actual cause of failure.\n\n' + 
+        `Or, re-run the following commands (run ${colors.gray('cd ' + relativeToRootDir)} first):`;
 
       const appiumFlag = isAppTestingSetup(answers) ? ' --appium' : '';
       const setupMsg = `  To setup Android, run: ${colors.gray.italic('npx @nightwatch/mobile-helper android' + appiumFlag)}\n` +
-          `  For Android help, run: ${colors.gray.italic('npx @nightwatch/mobile-helper android --help')}`;
+        `  For Android help, run: ${colors.gray.italic('npx @nightwatch/mobile-helper android --help')}`;
+      const setupMsgDirChange = `Use the following commands (run ${colors.gray('cd ' + relativeToRootDir)} first):\n`;
 
       const browsers = answers.mobileBrowsers?.filter((browser) => ['chrome', 'firefox'].includes(browser)) || [];
 
@@ -162,6 +166,11 @@ export function postMobileSetupInstructions(answers: ConfigGeneratorAnswers,
         commands.push('▶ To run an example test on Real Android device');
         commands.push('  * Make sure your device is connected with USB Debugging turned on.');
         commands.push('  * Make sure required browsers are installed.');
+
+        if (relativeToRootDir !== '.') {
+          commands.push('  Change directory:');
+          commands.push(`    ${colors.cyan('cd ' + relativeToRootDir)}`);
+        }
 
         if (answers.mobile && browsers.length) {
           commands.push('  For mobile web tests, run:');
@@ -183,6 +192,11 @@ export function postMobileSetupInstructions(answers: ConfigGeneratorAnswers,
       const emulatorAndroidTestCommand = (newline = '') => {
         const commands: string[] = [];
         commands.push('▶ To run an example test on Android Emulator');
+
+        if (relativeToRootDir !== '.') {
+          commands.push('  Change directory:');
+          commands.push(`    ${colors.cyan('cd ' + relativeToRootDir)}`);
+        }
 
         if (answers.mobile && browsers.length) {
           commands.push('  For mobile web tests, run:');
@@ -224,15 +238,11 @@ export function postMobileSetupInstructions(answers: ConfigGeneratorAnswers,
           Logger.info(
             boxen(`${colors.red(
               'Android setup skipped...'
-            )}\n\n${setupMsg}\n\n${testCommands}`, {padding: 1})
+            )}\n\n${setupMsgDirChange}${setupMsg}\n\n${testCommands}`, {padding: 1})
           );
         }
       } else {
         // mobileHelperResult.android.status is true.
-        if (rootDir !== process.cwd()) {
-          Logger.info('First, change directory to the root dir of your project:');
-          Logger.info(colors.cyan(`  cd ${relativeToRootDir}`), '\n');
-        }
 
         if (['real', 'both'].includes(mobileHelperResult.android.mode)) {
           Logger.info(realAndroidTestCommand(), '\n');
@@ -245,16 +255,23 @@ export function postMobileSetupInstructions(answers: ConfigGeneratorAnswers,
     }
 
     if (['ios', 'both'].includes(answers.mobilePlatform)) {
-      const setupHelp = 'Please follow the guide above to complete the setup.\n\nOr, re-run the following commands:';
+      const setupHelp = 'Please follow the guide above to complete the setup.\n\n' +
+        `Or, re-run the following commands (run ${colors.gray('cd ' + relativeToRootDir)} first):`;
 
       const setupCommand = `  For iOS setup, run: ${colors.gray.italic('npx @nightwatch/mobile-helper ios --setup')}\n` +
-          `  For iOS help, run: ${colors.gray.italic('npx @nightwatch/mobile-helper ios --help')}`;
+        `  For iOS help, run: ${colors.gray.italic('npx @nightwatch/mobile-helper ios --help')}`;
+      const setupCommandDirChange = `Use the following commands (run ${colors.gray('cd ' + relativeToRootDir)} first):\n`;
 
       const safariBrowserPresent = answers.mobileBrowsers?.includes('safari');
 
       const realIosTestCommand = () => {
         const commands: string[] = [];
         commands.push('▶ To run an example test on real iOS device');
+
+        if (relativeToRootDir !== '.') {
+          commands.push('  Change directory:');
+          commands.push(`    ${colors.cyan('cd ' + relativeToRootDir)}`);
+        }
 
         if (answers.mobile && safariBrowserPresent) {
           commands.push('  For mobile web tests, run:');
@@ -272,6 +289,11 @@ export function postMobileSetupInstructions(answers: ConfigGeneratorAnswers,
       const simulatorIosTestCommand = () => {
         const commands: string[] = [];
         commands.push('▶ To run an example test on iOS simulator');
+
+        if (relativeToRootDir !== '.') {
+          commands.push('  Change directory:');
+          commands.push(`    ${colors.cyan('cd ' + relativeToRootDir)}`);
+        }
 
         if (answers.mobile && safariBrowserPresent) {
           commands.push('  For mobile web tests, run:');
@@ -292,7 +314,7 @@ export function postMobileSetupInstructions(answers: ConfigGeneratorAnswers,
         Logger.error(
           boxen(`${colors.red(
             'iOS setup failed...'
-          )}\n\n${setupCommand}\n\n${testCommand}`, {padding: 1})
+          )}\n\n${setupCommandDirChange}${setupCommand}\n\n${testCommand}`, {padding: 1})
         );
       } else if (typeof mobileHelperResult.ios === 'object') {
         if (mobileHelperResult.ios.real) {
@@ -323,25 +345,26 @@ export function postMobileSetupInstructions(answers: ConfigGeneratorAnswers,
     }
 
     Logger.info(colors.green('🚀 RUN MOBILE EXAMPLE TESTS ON CLOUD'), '\n');
+
+    let directoryChange = '';
     if (rootDir !== process.cwd()) {
-      Logger.info('First, change directory to the root dir of your project:');
-      Logger.info(colors.cyan(`  cd ${relativeToRootDir}`), '\n');
+      directoryChange = `\n  cd ${relativeToRootDir}`;
     }
 
     const chromeEnvFlag = ' --env browserstack.android.chrome';
     const safariEnvFlag = ' --env browserstack.ios.safari';
 
     if (answers.runner === Runner.Cucumber) {
-      Logger.info('To run your tests with CucumberJS, simply run:');
+      Logger.info(`To run your tests with CucumberJS, simply run:${directoryChange}`);
       Logger.info('  Chrome: ', colors.cyan(`${cucumberExample}${chromeEnvFlag}`), '\n');
       Logger.info('  Safari: ', colors.cyan(`${cucumberExample}${safariEnvFlag}`), '\n');
     } else if (answers.addExamples) {
       if (answers.language === 'ts') {
-        Logger.info('To run an example test (github.ts), run:');
+        Logger.info(`To run an example test (github.ts), run:${directoryChange}`);
         Logger.info('  Chrome: ', colors.cyan(`${mobileTsExample}${chromeEnvFlag}`), '\n');
         Logger.info('  Safari: ', colors.cyan(`${mobileTsExample}${safariEnvFlag}`), '\n');
       } else {
-        Logger.info('To run an example test (ecosia.js), run:');
+        Logger.info(`To run an example test (ecosia.js), run:${directoryChange}`);
         Logger.info('  Chrome: ', colors.cyan(`${mobileJsExample}${chromeEnvFlag}`), '\n');
         Logger.info('  Safari: ', colors.cyan(`${mobileJsExample}${safariEnvFlag}`), '\n');
       }

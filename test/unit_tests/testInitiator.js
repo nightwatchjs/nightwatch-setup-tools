@@ -1636,7 +1636,7 @@ describe('Initiator tests', function() {
   });
 });
 
-describe('test identifyWebdriversToInstall', function() {
+describe('test identifyDriversToInstall', function() {
   beforeEach(function() {
     mockery.enable({useCleanCache: true, warnOnReplace: false, warnOnUnregistered: false});
   });
@@ -1647,7 +1647,7 @@ describe('test identifyWebdriversToInstall', function() {
     mockery.disable();
   });
 
-  it('selects correct webdrivers with firefox,chrome,safari browsers', function() {
+  it('selects correct drivers with firefox,chrome,safari browsers', function() {
     const answers = {
       testingType: ['e2e'],
       browsers: ['chrome', 'firefox', 'safari']
@@ -1656,13 +1656,13 @@ describe('test identifyWebdriversToInstall', function() {
     const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
     const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
-    const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
+    const driversToInstall = nightwatchInitiator.identifyDriversToInstall(answers);
 
-    assert.strictEqual(webdriversToInstall.length, 1);
-    assert.strictEqual(webdriversToInstall.includes('safaridriver'), true);
+    assert.strictEqual(driversToInstall.length, 1);
+    assert.strictEqual(driversToInstall.includes('safaridriver'), true);
   });
 
-  it('selects correct webdrivers with firefox,chrome mobileBrowser and safari browsers', function() {
+  it('selects correct drivers with firefox,chrome mobileBrowser and safari browsers', function() {
     const answers = {
       testingType: ['e2e'],
       browsers: ['safari'],
@@ -1672,13 +1672,13 @@ describe('test identifyWebdriversToInstall', function() {
     const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
     const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
-    const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
+    const driversToInstall = nightwatchInitiator.identifyDriversToInstall(answers);
 
-    assert.strictEqual(webdriversToInstall.length, 1);
-    assert.strictEqual(webdriversToInstall.includes('safaridriver'), true);
+    assert.strictEqual(driversToInstall.length, 1);
+    assert.strictEqual(driversToInstall.includes('safaridriver'), true);
   });
 
-  it('selects correct webdrivers with firefox browser and app testing on android', function() {
+  it('selects correct drivers with firefox browser and app testing on android', function() {
     const answers = {
       testingType: ['e2e', 'app'],
       browsers: ['firefox'],
@@ -1688,13 +1688,13 @@ describe('test identifyWebdriversToInstall', function() {
     const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
     const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
-    const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
+    const driversToInstall = nightwatchInitiator.identifyDriversToInstall(answers);
 
-    assert.strictEqual(webdriversToInstall.length, 1);
-    assert.strictEqual(webdriversToInstall.includes('chromedriver'), true);
+    assert.strictEqual(driversToInstall.length, 1);
+    assert.strictEqual(driversToInstall.includes('uiautomator2'), true);
   });
 
-  it('selects correct webdrivers with no browser and app testing on both', function() {
+  it('selects correct drivers with no browser and app testing on both', function() {
     const answers = {
       testingType: ['app'],
       mobilePlatform: 'both'
@@ -1703,14 +1703,15 @@ describe('test identifyWebdriversToInstall', function() {
     const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
     const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
-    const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
+    const driversToInstall = nightwatchInitiator.identifyDriversToInstall(answers);
 
-    assert.strictEqual(webdriversToInstall.length, 2);
-    assert.strictEqual(webdriversToInstall.includes('chromedriver'), true);
-    assert.strictEqual(webdriversToInstall.includes('safaridriver'), true);
+    assert.strictEqual(driversToInstall.length, 3);
+    assert.strictEqual(driversToInstall.includes('uiautomator2'), true);
+    assert.strictEqual(driversToInstall.includes('safaridriver'), true);
+    assert.strictEqual(driversToInstall.includes('xcuitest'), true);
   });
 
-  it('selects correct webdrivers with chrome mobileBrowser and app testing on ios', function() {
+  it('selects correct drivers with chrome mobileBrowser and app testing on ios', function() {
     const answers = {
       testingType: ['component', 'app'],
       mobileBrowsers: ['chrome'],
@@ -1720,13 +1721,14 @@ describe('test identifyWebdriversToInstall', function() {
     const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
     const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
-    const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
+    const driversToInstall = nightwatchInitiator.identifyDriversToInstall(answers);
 
-    assert.strictEqual(webdriversToInstall.length, 1);
-    assert.strictEqual(webdriversToInstall.includes('safaridriver'), true);
+    assert.strictEqual(driversToInstall.length, 2);
+    assert.strictEqual(driversToInstall.includes('safaridriver'), true);
+    assert.strictEqual(driversToInstall.includes('xcuitest'), true);
   });
 
-  it('selects correct webdrivers with safari mobileBrowser', function() {
+  it('selects correct drivers with safari mobileBrowser', function() {
     const answers = {
       testingType: ['component'],
       mobileBrowsers: ['safari']
@@ -1735,13 +1737,13 @@ describe('test identifyWebdriversToInstall', function() {
     const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
     const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
-    const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
+    const driversToInstall = nightwatchInitiator.identifyDriversToInstall(answers);
 
-    assert.strictEqual(webdriversToInstall.length, 1);
-    assert.strictEqual(webdriversToInstall.includes('safaridriver'), true);
+    assert.strictEqual(driversToInstall.length, 1);
+    assert.strictEqual(driversToInstall.includes('safaridriver'), true);
   });
   
-  it('selects correct webdrivers with firefox browser and app testing on both and backend remote', function() {
+  it('selects correct drivers with firefox browser and app testing on both and backend remote', function() {
     const answers = {
       backend: 'remote',
       browsers: ['firefox'],
@@ -1752,8 +1754,8 @@ describe('test identifyWebdriversToInstall', function() {
     const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
     const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
 
-    const webdriversToInstall = nightwatchInitiator.identifyWebdriversToInstall(answers);
+    const driversToInstall = nightwatchInitiator.identifyDriversToInstall(answers);
 
-    assert.strictEqual(webdriversToInstall.length, 0);
+    assert.strictEqual(driversToInstall.length, 0);
   });
 });

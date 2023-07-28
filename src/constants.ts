@@ -258,7 +258,7 @@ export const QUESTIONAIRRE: inquirer.QuestionCollection = [
 
   // PLATFORM
   {
-    ...MOBILE_BROWSER_QUES,
+    ...MOBILE_PLATFORM_QUES,
     when: (answers) => isAppTestingSetup(answers)
   },
 
