@@ -13,6 +13,7 @@
     "noEmit": true
   },
   "ts-node": {
+    // make sure to install `@swc/core` npm package.
     "swc": true
   }
 }
