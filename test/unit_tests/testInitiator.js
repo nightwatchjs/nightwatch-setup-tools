@@ -45,11 +45,12 @@ describe('Initiator tests', function() {
       const nightwatchInitiator = new NightwatchInitiator(rootDir, {});
       const answers = await nightwatchInitiator.askQuestions();
 
-      assert.deepStrictEqual(Object.keys(answers), ['rootDir', 'onlyConfig', 'browsers']);
+      assert.deepStrictEqual(Object.keys(answers), ['rootDir', 'onlyConfig', 'browsers', 'allowAnonymousMetrics']);
 
       assert.strictEqual(answers['rootDir'], rootDir);
       assert.strictEqual(answers['onlyConfig'], false);
       assert.strictEqual(answers['browsers'], undefined);
+      assert.strictEqual(answers['allowAnonymousMetrics'], true);
     });
 
     it('answers passed to inquirer also contains browsers, mobile and native when flags passed', async function() {
@@ -70,13 +71,14 @@ describe('Initiator tests', function() {
       nightwatchInitiator.onlyConfig = true;
       const answers = await nightwatchInitiator.askQuestions();
 
-      assert.deepStrictEqual(Object.keys(answers), ['rootDir', 'onlyConfig', 'browsers', 'mobile', 'native']);
+      assert.deepStrictEqual(Object.keys(answers), ['rootDir', 'onlyConfig', 'browsers', 'mobile', 'native', 'allowAnonymousMetrics']);
 
       assert.strictEqual(answers['rootDir'], rootDir);
       assert.strictEqual(answers['onlyConfig'], true);
       assert.deepStrictEqual(answers['browsers'], ['firefox']);
       assert.strictEqual(answers['mobile'], true);
       assert.strictEqual(answers['native'], true);
+      assert.strictEqual(answers['allowAnonymousMetrics'], true);
     });
 
     it('answers passed to inquirer contains correct property when mobile flag passed with wrong type', async function() {
@@ -91,12 +93,13 @@ describe('Initiator tests', function() {
       const answers = await nightwatchInitiator.askQuestions();
 
 
-      assert.deepStrictEqual(Object.keys(answers), ['rootDir', 'onlyConfig', 'browsers', 'mobile']);
+      assert.deepStrictEqual(Object.keys(answers), ['rootDir', 'onlyConfig', 'browsers', 'mobile', 'allowAnonymousMetrics']);
 
       assert.strictEqual(answers['rootDir'], rootDir);
       assert.strictEqual(answers['onlyConfig'], false);
       assert.deepStrictEqual(answers['browsers'], ['firefox']);
       assert.strictEqual(answers['mobile'], true);
+      assert.strictEqual(answers.allowAnonymousMetrics, true);
     });
   });
 
