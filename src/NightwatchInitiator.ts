@@ -156,12 +156,13 @@ export default class NightwatchInitiator {
       this.postConfigInstructions(answers);
     }
 
-    if (answers.allowAnonymousMetrics) {
-      try {
-        this.pushAnonymousMetrics(answers);
-      } catch (err) {
-        // do nothing
-      }
+    // Turn on analytics by default
+    Logger.info('Nightwatch collects anonymous usage data to improve user experience. You can turn it off in nightwatch.conf.js');
+    answers.allowAnonymousMetrics = true;
+    try {
+      this.pushAnonymousMetrics(answers);
+    } catch (err) {
+      // do nothing
     }
   }
 
