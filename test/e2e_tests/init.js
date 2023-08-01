@@ -1811,7 +1811,10 @@ describe('e2e tests for init', function() {
       remoteBrowsers: ['chrome'],
       baseUrl: 'https://nightwatchjs.org',
       testsLocation: 'tests',
-      allowAnonymousMetrics: true
+      allowAnonymousMetrics: true,
+      mobile: true,
+      mobilePlatform: 'iOS',
+      uiFramework: 'react'
     };
 
     const scope = nock('https://www.google-analytics.com')
@@ -1825,8 +1828,12 @@ describe('e2e tests for init', function() {
           'params': {
             'browsers': 'firefox',
             'cloudProvider': 'other',
+            'isMobile': true,
             'language': 'ts',
-            'runner': 'nightwatch'
+            'mobilePlatform': 'iOS',
+            'runner': 'nightwatch',
+            'testingType': 'e2e',
+            'uiFramework': 'react'
           }
         });
         assert.strictEqual(requestBody.non_personalized_ads, true);
@@ -1891,6 +1898,61 @@ describe('e2e tests for init', function() {
       .replyWithError({
         code: 'ECONNREFUSED',
         errno: 'ECONNREFUSED'
+      });
+
+    const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
+    const nightwatchInit = new NightwatchInitiator(rootDir, {'generate-config': true});
+
+    nightwatchInit.askQuestions = function() {
+      return answers;
+    };
+
+    const configPath = path.join(rootDir, 'nightwatch.conf.js');
+    nightwatchInit.getConfigDestPath = function() {
+      return configPath;
+    };
+
+    await nightwatchInit.run();
+
+    new Promise(resolve => {
+      setTimeout(function() {
+        assert.ok(scope.isDone());
+        resolve();
+      }, 0);
+
+      rmDirSync(rootDir);
+    });
+  });
+
+  it('make sure we send analytics data by default', async function() {
+    const consoleOutput = [];
+    mockLogger(consoleOutput);
+
+    const commandsExecuted = [];
+    mockery.registerMock('child_process', {
+      execSync(command, options) {
+        commandsExecuted.push(command);
+      }
+    });
+
+    const answers = {
+      testingType: ['e2e'],
+      language: 'ts',
+      runner: 'nightwatch',
+      backend: 'both',
+      cloudProvider: 'other',
+      browsers: ['firefox'],
+      remoteBrowsers: ['chrome'],
+      baseUrl: 'https://nightwatchjs.org',
+      testsLocation: 'tests',
+      allowAnonymousMetrics: false
+    };
+
+    const scope = nock('https://www.google-analytics.com')
+      .post('/mp/collect?api_secret=XuPojOTwQ6yTO758EV4hBg&measurement_id=G-DEKPKZSLXS')
+      .reply(204, (uri, requestBody) => {
+        assert.notEqual(requestBody.client_id, '');
+        assert.notEqual(requestBody.client_id, undefined);
       });
 
     const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;

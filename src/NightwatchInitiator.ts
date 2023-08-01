@@ -158,7 +158,6 @@ export default class NightwatchInitiator {
 
     // Turn on analytics by default
     Logger.info('Nightwatch collects anonymous usage data to improve user experience. You can turn it off in nightwatch.conf.js');
-    answers.allowAnonymousMetrics = true;
     try {
       this.pushAnonymousMetrics(answers);
     } catch (err) {
@@ -172,7 +171,8 @@ export default class NightwatchInitiator {
       onlyConfig: this.onlyConfig,
       browsers: this.options?.browser,
       ...(this.options?.mobile && {mobile: true}),
-      ...(this.options?.native && {native: true})
+      ...(this.options?.native && {native: true}),
+      allowAnonymousMetrics: true
     };
 
     return await prompt(QUESTIONAIRRE, answers);
@@ -925,7 +925,11 @@ export default class NightwatchInitiator {
           cloudProvider: answers.cloudProvider,
           language: answers.language,
           runner: answers.runner,
-          addExample: answers.addExamples
+          addExample: answers.addExamples,
+          testingType: answers.testingType?.join(','),
+          isMobile: answers.mobile,
+          mobilePlatform: answers.mobilePlatform,
+          uiFramework: answers.uiFramework
         }
       }
     };
