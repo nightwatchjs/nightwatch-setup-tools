@@ -1924,7 +1924,7 @@ describe('e2e tests for init', function() {
     });
   });
 
-  it('make sure we send analytics data by default', async function() {
+  it('make sure we do not send analytics data if allowAnalytics is set to false', async function() {
     const consoleOutput = [];
     mockLogger(consoleOutput);
 
@@ -1948,11 +1948,10 @@ describe('e2e tests for init', function() {
       allowAnonymousMetrics: false
     };
 
-    const scope = nock('https://www.google-analytics.com')
+    nock('https://www.google-analytics.com')
       .post('/mp/collect?api_secret=XuPojOTwQ6yTO758EV4hBg&measurement_id=G-DEKPKZSLXS')
       .reply(204, (uri, requestBody) => {
-        assert.notEqual(requestBody.client_id, '');
-        assert.notEqual(requestBody.client_id, undefined);
+        assert.fail();
       });
 
     const NightwatchInitiator = require('../../lib/NightwatchInitiator').default;
@@ -1969,13 +1968,6 @@ describe('e2e tests for init', function() {
 
     await nightwatchInit.run();
 
-    new Promise(resolve => {
-      setTimeout(function() {
-        assert.ok(scope.isDone());
-        resolve();
-      }, 0);
-
-      rmDirSync(rootDir);
-    });
+    rmDirSync(rootDir);
   });
 });

@@ -337,6 +337,14 @@ export const QUESTIONAIRRE: inquirer.QuestionCollection = [
     when: (answers) => ['remote', 'both'].includes(answers.backend)
   },
 
+  // ANONYMOUS METRIC COLLECTION
+  {
+    type: 'confirm',
+    name: 'allowAnonymousMetrics',
+    message: 'Allow Nightwatch to collect completely anonymous usage metrics?',
+    default: false
+  },
+
   // TEST ON MOBILE
   {
     type: 'list',
