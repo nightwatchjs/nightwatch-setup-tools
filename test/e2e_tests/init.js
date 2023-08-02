@@ -1827,13 +1827,13 @@ describe('e2e tests for init', function() {
           'name': 'nw_install',
           'params': {
             'browsers': 'firefox',
-            'cloudProvider': 'other',
-            'isMobile': true,
+            'cloud_provider': 'other',
+            'is_mobile': true,
             'language': 'ts',
-            'mobilePlatform': 'iOS',
+            'mobile_platform': 'iOS',
             'runner': 'nightwatch',
-            'testingType': 'e2e',
-            'uiFramework': 'react'
+            'testing_type': 'e2e',
+            'ui_framework': 'react'
           }
         });
         assert.strictEqual(requestBody.non_personalized_ads, true);

@@ -923,14 +923,14 @@ export default class NightwatchInitiator {
         'name': 'nw_install',
         'params': {
           browsers: answers.browsers?.join(','),
-          cloudProvider: answers.cloudProvider,
+          cloud_provider: answers.cloudProvider,
           language: answers.language,
           runner: answers.runner,
-          addExample: answers.addExamples,
-          testingType: answers.testingType?.join(','),
-          isMobile: answers.mobile,
-          mobilePlatform: answers.mobilePlatform,
-          uiFramework: answers.uiFramework
+          add_example: answers.addExamples,
+          testing_type: answers.testingType?.join(','),
+          is_mobile: answers.mobile,
+          mobile_platform: answers.mobilePlatform,
+          ui_framework: answers.uiFramework
         }
       }
     };
