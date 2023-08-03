@@ -342,7 +342,7 @@ export const QUESTIONAIRRE: inquirer.QuestionCollection = [
     type: 'confirm',
     name: 'allowAnonymousMetrics',
     message: 'Allow Nightwatch to collect completely anonymous usage metrics?',
-    default: false
+    default: true
   },
 
   // TEST ON MOBILE

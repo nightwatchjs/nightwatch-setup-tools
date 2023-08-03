@@ -172,8 +172,7 @@ export default class NightwatchInitiator {
       onlyConfig: this.onlyConfig,
       browsers: this.options?.browser,
       ...(this.options?.mobile && {mobile: true}),
-      ...(this.options?.native && {native: true}),
-      allowAnonymousMetrics: true // Turn on analytics by default
+      ...(this.options?.native && {native: true})
     };
 
     return await prompt(QUESTIONAIRRE, answers);
