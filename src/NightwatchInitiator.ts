@@ -157,6 +157,7 @@ export default class NightwatchInitiator {
     }
 
     if (answers.allowAnonymousMetrics) {
+      Logger.info('Nightwatch collects anonymous usage data to improve user experience. You can turn it off in nightwatch.conf.js');
       try {
         this.pushAnonymousMetrics(answers);
       } catch (err) {
@@ -921,10 +922,14 @@ export default class NightwatchInitiator {
         'name': 'nw_install',
         'params': {
           browsers: answers.browsers?.join(','),
-          cloudProvider: answers.cloudProvider,
+          cloud_provider: answers.cloudProvider,
           language: answers.language,
           runner: answers.runner,
-          addExample: answers.addExamples
+          add_example: answers.addExamples,
+          testing_type: answers.testingType?.join(','),
+          is_mobile: answers.mobile,
+          mobile_platform: answers.mobilePlatform,
+          ui_framework: answers.uiFramework
         }
       }
     };

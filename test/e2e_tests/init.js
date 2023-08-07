@@ -1811,7 +1811,10 @@ describe('e2e tests for init', function() {
       remoteBrowsers: ['chrome'],
       baseUrl: 'https://nightwatchjs.org',
       testsLocation: 'tests',
-      allowAnonymousMetrics: true
+      allowAnonymousMetrics: true,
+      mobile: true,
+      mobilePlatform: 'iOS',
+      uiFramework: 'react'
     };
 
     const scope = nock('https://www.google-analytics.com')
@@ -1824,9 +1827,13 @@ describe('e2e tests for init', function() {
           'name': 'nw_install',
           'params': {
             'browsers': 'firefox',
-            'cloudProvider': 'other',
+            'cloud_provider': 'other',
+            'is_mobile': true,
             'language': 'ts',
-            'runner': 'nightwatch'
+            'mobile_platform': 'iOS',
+            'runner': 'nightwatch',
+            'testing_type': 'e2e',
+            'ui_framework': 'react'
           }
         });
         assert.strictEqual(requestBody.non_personalized_ads, true);
