@@ -1,4 +1,4 @@
-import {NightwatchTests} from 'nightwatch';
+import {NightwatchAPI, NightwatchTests} from 'nightwatch';
 
 const home: NightwatchTests = {
   'Github Title test': () => {
@@ -12,7 +12,7 @@ const home: NightwatchTests = {
       .url('https://github.com/search')
       .clearValue('[placeholder=\'Search GitHub\']')
       .setValue('[placeholder=\'Search GitHub\']', 'nightwatch')
-      .perform(function(this: any) {
+      .perform(function(this: NightwatchAPI) {
         const actions = this.actions({async: true});
 
         return actions.keyDown(this.Keys['ENTER']).keyUp(this.Keys['ENTER']);
