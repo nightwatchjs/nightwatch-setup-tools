@@ -157,7 +157,7 @@ export default class NightwatchInitiator {
     }
 
     if (answers.allowAnonymousMetrics) {
-      Logger.info('Nightwatch collects anonymous usage data to improve user experience. You can turn it off in nightwatch.conf.js');
+      Logger.info('Note: Nightwatch collects anonymous usage data to improve user experience. You can turn it off in nightwatch.conf.js');
       try {
         this.pushAnonymousMetrics(answers);
       } catch (err) {
