@@ -132,6 +132,7 @@ export const UI_FRAMEWORK_QUESTIONS = {
   choices: [
     {name: 'React', value: 'react'},
     {name: 'Vue.js', value: 'vue'},
+    {name: 'Svelte', value: 'svelte'},
     {name: 'Storybook', value: 'storybook'}
   ]
 };

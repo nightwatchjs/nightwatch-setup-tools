@@ -29,7 +29,7 @@ export interface ConfigGeneratorAnswers {
   mobileBrowsers?: string[];
   native?: boolean;
   mobilePlatform?: 'android' | 'ios' | 'both';
-  uiFramework?: 'react' | 'vue' | 'storybook';
+  uiFramework?: 'react' | 'vue' | 'svelte' | 'storybook';
   plugins?: string[];
 }
 
