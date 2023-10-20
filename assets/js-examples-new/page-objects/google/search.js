@@ -32,7 +32,7 @@ module.exports = {
 
   elements: {
     searchBar: {
-      selector: 'input[name=q]'
+      selector: 'textarea[name=q]'
     },
 
     submitButton: {

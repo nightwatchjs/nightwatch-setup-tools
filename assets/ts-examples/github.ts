@@ -22,7 +22,7 @@ const home: NightwatchTests = {
       .waitForElementVisible('div[data-testid="results-list"]:first-child')
       .assert.textContains(
         'div[data-testid="results-list"]:first-child',
-        'End-to-end testing framework written in Node.js and using the W3C Webdriver API'
+        'Integrated end-to-end testing framework written in Node.js and using W3C Webdriver API'
       );
   },
 

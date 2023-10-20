@@ -24,7 +24,7 @@ describe('duckduckgo example', function(this: ExtendDescribeThis<CustomThis>) {
       .waitForElementVisible(this.searchBox!)
       .sendKeys(this.searchBox!, ['Nightwatch.js'])
       .click(this.submitButton!)
-      .assert.visible('.react-results--main')
-      .assert.textContains('.react-results--main', 'Nightwatch.js');
+      .assert.visible('#react-layout')
+      .assert.textContains('#react-layout', 'Nightwatch.js');
   });
 });

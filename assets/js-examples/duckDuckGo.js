@@ -5,7 +5,7 @@ describe('duckduckgo example', function() {
       .waitForElementVisible('#search_form_input_homepage')
       .sendKeys('#search_form_input_homepage', ['Nightwatch.js'])
       .click('#search_button_homepage')
-      .assert.visible('.results--main')
-      .assert.textContains('.results--main', 'Nightwatch.js');
+      .assert.visible('#react-layout')
+      .assert.textContains('#react-layout', 'Nightwatch.js');
   });
 });
