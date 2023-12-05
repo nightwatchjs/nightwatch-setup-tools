@@ -135,7 +135,7 @@ export default class NightwatchConfigurator {
       fs.copyFileSync(reactIndexSrcPath, reactIndexDestPath);
     }
 
-    if (answers.uiFramework === 'react' || answers.uiFramework === 'vue') {
+    if (answers.uiFramework === 'react' || answers.uiFramework === 'vue' || answers.uiFramework === 'svelte') {
       this.nightwatchPkgConfig.vite_dev_server = {
         start_vite: true,
         port: 5173
@@ -515,7 +515,7 @@ export default class NightwatchConfigurator {
   private printHelpForAdd() {
     const message = `
     Invalid argument passed to ${colors.cyan('--add')}, available options are:
-        ${colors.yellow('component-testing')}       :: Adds support for component testing using React, Vue, etc.
+        ${colors.yellow('component-testing')}       :: Adds support for component testing using React, Vue, Svelte etc.
         ${colors.yellow('unit-testing')}            :: Adds support for unit testing / api testing.
         ${colors.yellow('vrt')}                     :: Adds support for Visual Regression testing.
         ${colors.yellow('mobile-testing')}          :: Sets up tools to run tests on real mobile devices using Nightwatch. 
