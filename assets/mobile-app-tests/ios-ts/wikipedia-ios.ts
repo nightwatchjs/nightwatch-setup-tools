@@ -6,24 +6,20 @@ describe('Wikipedia iOS app test', function() {
   });
 
   it('Search for BrowserStack', async function(app: NightwatchAPI) {
-    app
-      .useXpath()
-      .click('//XCUIElementTypeSearchField[@name="Search Wikipedia"]')
-      .sendKeys('//XCUIElementTypeSearchField[@name="Search Wikipedia"]', 'browserstack')
-      .click('//XCUIElementTypeStaticText[@name="BrowserStack"]')
-      .waitUntil(async function() {
-        // wait for webview context to be available
-        const contexts = await app.appium.getContexts();
+    // click on search bar
+    const searchField = app.element(by.xpath('//XCUIElementTypeSearchField[@name="Search Wikipedia"]'));
+    searchField.click();
 
-        return contexts.length > 1;
-      }, 5000)
-      .perform(async function() {
-        // switch to webview context
-        const contexts = await app.appium.getContexts();
-  
-        await app.appium.setContext(contexts[1]);
-      })
-      .useCss()
-      .assert.textEquals('.pcs-edit-section-title', 'BrowserStack');  // command run in webview context
+    // above step will open another search field (with same xpath), type 'browserstack' in that.
+    const editableSearchField = app.element(by.xpath('//XCUIElementTypeSearchField[@name="Search Wikipedia"]'));
+    editableSearchField.sendKeys('browserstack');
+
+    // click on search result with 
+    const bstackSearchResult = app.element(by.xpath('//XCUIElementTypeStaticText[@name="BrowserStack"]'));
+    bstackSearchResult.click();
+
+    // assert the title of the opened page.
+    const pageTitle = app.element(by.xpath('(//XCUIElementTypeStaticText[@name="BrowserStack"])[1]'));
+    pageTitle.getText().assert.equals('BrowserStack');
   });
 });
