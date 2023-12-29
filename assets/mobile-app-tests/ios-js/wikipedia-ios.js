@@ -4,7 +4,7 @@ describe('Wikipedia iOS app test', function() {
   });
 
   it('Search for BrowserStack', async function(app) {
-    // click on search bar
+    // click on search bar at the top.
     const searchField = app.element(by.xpath('//XCUIElementTypeSearchField[@name="Search Wikipedia"]'));
     searchField.click();
 
@@ -12,7 +12,7 @@ describe('Wikipedia iOS app test', function() {
     const editableSearchField = app.element(by.xpath('//XCUIElementTypeSearchField[@name="Search Wikipedia"]'));
     editableSearchField.sendKeys('browserstack');
 
-    // click on search result with 
+    // click on search result with name attribute as 'BrowserStack'.
     const bstackSearchResult = app.element(by.xpath('//XCUIElementTypeStaticText[@name="BrowserStack"]'));
     bstackSearchResult.click();
 
