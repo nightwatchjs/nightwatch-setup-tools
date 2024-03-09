@@ -27,6 +27,6 @@ describe('google search with consent form - page objects', function() {
     resultsPage.expect.section('@menu').to.be.visible;
 
     const menuSection = resultsPage.section.menu;
-    menuSection.expect.element('@all').to.be.visible;
+    menuSection.expect.element('@maps').to.be.visible;
   });
 });

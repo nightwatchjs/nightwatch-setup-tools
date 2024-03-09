@@ -37,12 +37,12 @@ module.exports = {
       locateStrategy: 'xpath',
       commands: [menuCommands],
       elements: {
-        all: {
-          selector: util.format(menuXpath, 'All'),
+        maps: {
+          selector: util.format(menuXpath, 'Maps'),
           locateStrategy: 'xpath',
           index: 0
         },
-        video: {
+        videos: {
           selector: util.format(menuXpath, 'Videos'),
           locateStrategy: 'xpath',
           index: 0
