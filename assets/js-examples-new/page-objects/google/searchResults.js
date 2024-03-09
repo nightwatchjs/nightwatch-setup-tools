@@ -13,7 +13,7 @@
  */
 
 const util = require('util');
-const menuXpath = '//div[contains(@class, "hdtb-mitem")][contains(., "%s")]';
+const menuXpath = '//*[@role = "navigation"]//span[text()="%s"]';
 
 const menuCommands = {
   productIsSelected: function(product, callback) {
