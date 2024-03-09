@@ -33,7 +33,8 @@ module.exports = {
 
   sections: {
     menu: {
-      selector: '#hdtb-msb',
+      selector: '//*[@id="main"]//div[@role="navigation"]',
+      locateStrategy: 'xpath',
       commands: [menuCommands],
       elements: {
         all: {
