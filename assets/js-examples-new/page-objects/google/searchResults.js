@@ -36,8 +36,7 @@ module.exports = {
 
   sections: {
     menu: {
-      selector: '//*[@id="main"]//div[@role="navigation"]',
-      locateStrategy: 'xpath',
+      selector: 'div[role="navigation"] div[data-st-cnt="mode"]',
       commands: [menuCommands],
       elements: {
         maps: {
