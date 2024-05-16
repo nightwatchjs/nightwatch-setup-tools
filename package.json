@@ -20,7 +20,6 @@
     "url": "git+https://github.com/nightwatchjs/create-nightwatch"
   },
   "devDependencies": {
-    "@npm/types": "^1.0.2",
     "@types/cli-progress": "^3.11.0",
     "@types/ejs": "^3.1.1",
     "@types/inquirer": "^8.2.1",
@@ -42,7 +41,6 @@
     "@nightwatch/mobile-helper": "^0.1.13",
     "@npmcli/package-json": "^3.1.1",
     "ansi-colors": "^4.1.3",
-    "axios": "^0.27.2",
     "boxen": "5.1.2",
     "cli-progress": "^3.11.2",
     "ejs": "^3.1.10",
