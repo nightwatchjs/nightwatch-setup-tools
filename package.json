@@ -20,7 +20,6 @@
     "url": "git+https://github.com/nightwatchjs/create-nightwatch"
   },
   "devDependencies": {
-    "@npm/types": "^1.0.2",
     "@types/cli-progress": "^3.11.0",
     "@types/ejs": "^3.1.1",
     "@types/inquirer": "^8.2.1",
@@ -34,18 +33,17 @@
     "eslint": "^8.27.0",
     "mocha": "^10.1.0",
     "mockery": "^2.1.0",
-    "nightwatch": "^3.0.1",
+    "nightwatch": "^3.6.2",
     "nock": "^13.2.9",
     "typescript": "^4.7.3"
   },
   "dependencies": {
-    "@nightwatch/mobile-helper": "^0.1.11",
+    "@nightwatch/mobile-helper": "^0.1.13",
     "@npmcli/package-json": "^3.1.1",
     "ansi-colors": "^4.1.3",
-    "axios": "^0.27.2",
     "boxen": "5.1.2",
     "cli-progress": "^3.11.2",
-    "ejs": "^3.1.8",
+    "ejs": "^3.1.10",
     "inquirer": "^8.2.4",
     "minimist": "^1.2.6",
     "node-downloader-helper": "^2.1.6",
