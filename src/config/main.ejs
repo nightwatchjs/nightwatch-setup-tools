@@ -39,7 +39,7 @@ module.exports = {
     show_browser_console: true,
     storybook_url: '<%- answers.baseUrl %>'
   },
-  <% } else if (answers.uiFramework === 'react' || answers.uiFramework === 'vue') { %>
+  <% } else if (answers.uiFramework === 'react' || answers.uiFramework === 'vue' || answers.uiFramework === 'svelte') { %>
   vite_dev_server: {
     start_vite: true,
     port: 5173

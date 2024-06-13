@@ -658,6 +658,24 @@ describe('Initiator tests', function() {
       assert.strictEqual(answers['uiFramework'], 'vue');
     });
 
+    it('when svelte is selected as uiFramework', function() {
+      mockery.registerMock('node:fs', {
+        existsSync: () => false
+      });
+
+      const NightwatchInitiator = require('../../lib/NightwatchInitiator.js').default;
+      const nightwatchInitiator = new NightwatchInitiator(rootDir, []);
+
+      let answers = {
+        uiFramework: 'svelte'
+      };
+      nightwatchInitiator.refineAnswers(answers);
+      assert.strictEqual('plugins' in answers, true);
+      assert.strictEqual('uiFramework' in answers, true);
+      assert.deepEqual(answers['plugins'], ['@nightwatch/svelte']);
+      assert.strictEqual(answers['uiFramework'], 'svelte');
+    });
+
     it('when storybook is selected as uiFramework', function() {
       mockery.registerMock('node:fs', {
         existsSync: () => false
